@@ -1,6 +1,5 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -57,7 +57,7 @@ public class TareaCursorAdapter extends CursorAdapter {
 
         final Button btnFinalizar = (Button) view.findViewById(R.id.tareaBtnFinalizada);
         final Button btnEditar = (Button) view.findViewById(R.id.tareaBtnEditarDatos);
-        ToggleButton btnEstado = (ToggleButton) view.findViewById(R.id.tareaBtnTrabajando);
+        final ToggleButton btnEstado = (ToggleButton) view.findViewById(R.id.tareaBtnTrabajando);
 
         nombre.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA)));
         Integer horasAsigandas = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS));
@@ -97,6 +97,28 @@ public class TareaCursorAdapter extends CursorAdapter {
                     }
                 });
                 backGroundUpdate.start();
+            }
+        });
+
+        btnEstado.setTag(R.id.TAG_ONLINE_ID, cursor.getInt(cursor.getColumnIndex("_id")));
+        btnEstado.setOnCheckedChangeListener(new ToggleButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                final Integer idTarea = (Integer) buttonView.getTag(R.id.TAG_ONLINE_ID);
+                if (isChecked) {
+                    btnEstado.setTag(R.id.TAG_ONLINE_tiempoComienzo, System.currentTimeMillis());
+                    Log.d("LAB05-MAIN", "comenzar a trabajar : --- " + idTarea);
+                } else {
+                    final Integer minutosTranscurridos = (int) (long) ((System.currentTimeMillis() - (Long) btnEstado.getTag(R.id.TAG_ONLINE_tiempoComienzo)) / 1000 * 12 / 60);
+                    Thread backGroundUpdate = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("LAB05-MAIN", "terminar de trabajar : --- " + idTarea);
+                            myDao.actualizarMinutosTarea(idTarea, minutosTranscurridos);
+                            handlerRefresh.sendEmptyMessage(1);
+                        }
+                    });
+                    backGroundUpdate.start();
+                }
             }
         });
     }

@@ -100,6 +100,24 @@ public class ProyectoDAO {
         mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
     }
 
+    public void actualizarMinutosTarea(Integer idTarea, int minutosAdicionales ){
+
+        String[] columns = {"_id", ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS};
+        SQLiteDatabase mydb =dbHelper.getWritableDatabase();
+        Cursor result = mydb.query(ProyectoDBMetadata.TABLA_TAREAS, columns, "_id=?", new String[]{idTarea.toString()}, null, null, null);
+
+        result.moveToFirst();
+        int minutosTrabajados = result.getInt(1);
+        Log.d("LAB05-MAIN", "minutosTrabajados: " + minutosTrabajados + " minutosAdicionales: "+ minutosAdicionales);
+
+        minutosTrabajados += minutosAdicionales;
+        //Establecemos los campos-valores a actualizar
+        ContentValues valores = new ContentValues();
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, minutosTrabajados);
+
+        mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
+    }
+
     public List<Tarea> listarDesviosPlanificacion(Boolean soloTerminadas,Integer desvioMaximoMinutos){
         // retorna una lista de todas las tareas que tardaron más (en exceso) o menos (por defecto)
         // que el tiempo planificado.
