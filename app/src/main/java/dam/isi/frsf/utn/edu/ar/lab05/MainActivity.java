@@ -20,18 +20,15 @@ package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
-
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 
@@ -100,9 +97,15 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case R.id.action_alta_usuario:
+                Intent intent = new Intent(this, AltaUsuarioActivity.class);
+                startActivity(intent);
+                break;
+
+            case R.id.action_settings:
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

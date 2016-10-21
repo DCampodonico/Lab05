@@ -94,6 +94,13 @@ public class ProyectoDAO {
 
     }
 
+    public void nuevoUsuario(Usuario u){
+        ContentValues valores = new ContentValues();
+        valores.put(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO,u.getNombre());
+        valores.put(ProyectoDBMetadata.TablaUsuariosMetadata.MAIL,u.getCorreoElectronico());
+        SQLiteDatabase mydb =dbHelper.getWritableDatabase();
+        mydb.insert(ProyectoDBMetadata.TABLA_USUARIOS, ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO,valores);
+    }
     public void actualizarTarea(Tarea t){
 
     }

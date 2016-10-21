@@ -46,7 +46,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:id="@+id/editTextDescripcion"
 
         android:lines="3" />
 
@@ -60,7 +60,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText2" />
+        android:id="@+id/editTextHorasEstimadas" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -72,7 +72,7 @@
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/seekBar"
+        android:id="@+id/seekBarPrioridad"
         android:max="4"
         android:progress="1"
         android:indeterminate="false" />
@@ -87,7 +87,7 @@
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/spinner" />
+        android:id="@+id/spinnerReponsable" />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

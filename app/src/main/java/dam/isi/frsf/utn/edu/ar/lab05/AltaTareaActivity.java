@@ -18,14 +18,53 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.Spinner;
 
-public class AltaTareaActivity extends AppCompatActivity {
+public class AltaTareaActivity extends AppCompatActivity implements View.OnClickListener {
+    EditText editTextDescripcion, editTextHorasEstimadas;
+    Spinner spinnerResponsable;
+    SeekBar seekBarPrioridad;
+    Button btnGuardar, btnCancelar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_tarea);
+        editTextDescripcion = (EditText) findViewById(R.id.editTextDescripcion);
+        editTextHorasEstimadas = (EditText) findViewById(R.id.editTextHorasEstimadas);
+        spinnerResponsable = (Spinner) findViewById(R.id.spinnerReponsable);
+        seekBarPrioridad = (SeekBar) findViewById(R.id.seekBarPrioridad);
+        btnGuardar = (Button) findViewById(R.id.btnGuardar);
+        btnCancelar = (Button) findViewById(R.id.btnCanelar);
+
+        btnGuardar.setOnClickListener(this);
+        btnCancelar.setOnClickListener(this);
     }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if(id == btnCancelar.getId()){
+
+        }
+        else if(id == btnGuardar.getId()){
+//            if(validar() == ""){
+
+  //          }
+    //        else{
+
+      //      }
+        }
+    }
+
+    //TODO
+    //private String validar() {
+
+    //}
 }
