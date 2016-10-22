@@ -23,4 +23,8 @@
     <item name="TAG_ONLINE_ID" type="id" />
     <item name="TAG_ONLINE_tiempoComienzo" type="id"></item>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="error_horas_estimadas">Horas estimadas inválidas</string>
+    <string name="error_prioridad">Prioridad inválida</string>
+    <string name="error_descripcion">Descripción inválida</string>
+    <string name="exito_nueva_tarea">Se ha creado una nueva tarea</string>
 </resources>

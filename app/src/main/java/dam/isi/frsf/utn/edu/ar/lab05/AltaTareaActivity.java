@@ -25,12 +25,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 public class AltaTareaActivity extends AppCompatActivity implements View.OnClickListener {
     EditText editTextDescripcion, editTextHorasEstimadas;
     Spinner spinnerResponsable;
     SeekBar seekBarPrioridad;
     Button btnGuardar, btnCancelar;
+    ProyectoDAO proyectoDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
         seekBarPrioridad = (SeekBar) findViewById(R.id.seekBarPrioridad);
         btnGuardar = (Button) findViewById(R.id.btnGuardar);
         btnCancelar = (Button) findViewById(R.id.btnCanelar);
+        proyectoDAO = new ProyectoDAO(this);
 
         btnGuardar.setOnClickListener(this);
         btnCancelar.setOnClickListener(this);
@@ -51,20 +59,50 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         int id = v.getId();
         if(id == btnCancelar.getId()){
-
+            finish();
         }
         else if(id == btnGuardar.getId()){
-//            if(validar() == ""){
-
-  //          }
-    //        else{
-
-      //      }
+            String errores = validar();
+            if(errores.equals("")){
+                Tarea t = new Tarea();
+                t.setDescripcion(editTextDescripcion.getText().toString().trim());
+                t.setFinalizada(false);
+                t.setHorasEstimadas(Integer.parseInt(editTextHorasEstimadas.getText().toString().trim()));
+                t.setMinutosTrabajados(0);
+                t.setPrioridad(proyectoDAO.obtenerPrioridad(seekBarPrioridad.getProgress()));
+                //TODO t.setProyecto();
+                t.setProyecto(new Proyecto(1, ""));
+                //TODO t.setResponsable();
+                t.setResponsable(new Usuario(1, "", ""));
+                proyectoDAO.nuevaTarea(t);
+                Toast.makeText(this, R.string.exito_nueva_tarea, Toast.LENGTH_LONG).show();
+                finish();
+            }
+            else{
+                Toast.makeText(this, errores, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
-    //TODO
-    //private String validar() {
+    private String validar() {
+        String res = "";
+        if(editTextDescripcion.getText().toString().trim().equals("")){
+            res += getString(R.string.error_descripcion);
+        }
 
-    //}
+        try{
+            Integer.parseInt(editTextHorasEstimadas.getText().toString().trim());
+        }
+        catch (Exception e){
+            res += (res.isEmpty()? "" : "\n") + getString(R.string.error_horas_estimadas);
+        }
+
+        if(seekBarPrioridad.getProgress()<1 || seekBarPrioridad.getProgress()>4){
+            res += (res.isEmpty()? "" : "\n") + getString(R.string.error_prioridad);
+        }
+
+        //TODO validar spinner
+
+        return res;
+    }
 }

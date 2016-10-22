@@ -91,7 +91,17 @@ public class ProyectoDAO {
     }
 
     public void nuevaTarea(Tarea t){
-
+        ContentValues valores = new ContentValues();
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, t.getMinutosTrabajados());
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA, t.getFinalizada());
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS, t.getHorasEstimadas());
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD, t.getPrioridad().getId());
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO, t.getProyecto().getId());
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE, t.getResponsable().getId());
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA, t.getDescripcion());
+        SQLiteDatabase mydb =dbHelper.getWritableDatabase();
+        mydb.insert(ProyectoDBMetadata.TABLA_TAREAS, ProyectoDBMetadata.TablaTareasMetadata.TAREA, valores);
+        mydb.close();
     }
 
     public void nuevoUsuario(Usuario u){
@@ -100,6 +110,7 @@ public class ProyectoDAO {
         valores.put(ProyectoDBMetadata.TablaUsuariosMetadata.MAIL,u.getCorreoElectronico());
         SQLiteDatabase mydb =dbHelper.getWritableDatabase();
         mydb.insert(ProyectoDBMetadata.TABLA_USUARIOS, ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO,valores);
+        mydb.close();
     }
     public void actualizarTarea(Tarea t){
 
@@ -150,5 +161,15 @@ public class ProyectoDAO {
         return null;
     }
 
-
+    public Prioridad obtenerPrioridad(Integer id){
+        SQLiteDatabase mydb =dbHelper.getReadableDatabase();
+        Cursor cursor = mydb.query(true, ProyectoDBMetadata.TABLA_PRIORIDAD, null, "_id=?", new String[]{id.toString()}, null, null, null, null);
+        Prioridad prioridad = new Prioridad();
+        prioridad.setId(id);
+        cursor.moveToFirst();
+        prioridad.setPrioridad(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD)));
+        cursor.close();
+        mydb.close();
+        return prioridad;
+    }
 }
