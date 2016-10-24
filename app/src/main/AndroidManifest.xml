@@ -35,6 +35,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".AltaTareaActivity" />
+        <activity
+            android:name=".BuscarTareaDesvio"
+            android:label="@string/title_activity_buscar_tarea_desvio"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dam.isi.frsf.utn.edu.ar.lab05.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

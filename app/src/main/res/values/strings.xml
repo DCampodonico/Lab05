@@ -35,4 +35,9 @@
     <string name="dialog_aceptar">Aceptar</string>
     <string name="dialog_cancelar">Cancelar</string>
     <string name="exito_eliminar_tarea">Se ha eliminado la tarea</string>
+    <string name="title_activity_buscar_tarea_desvio">BuscarTareaDesvio</string>
+    <string name="action_buscar_tarea_desvio_title">Buscar tareas desviadas</string>
+    <string name="switch_text">Tarea terminada</string>
+    <string name="tv_minutos_desvio">Minutos de desvío</string>
+    <string name="btn_buscar">Buscar</string>
 </resources>

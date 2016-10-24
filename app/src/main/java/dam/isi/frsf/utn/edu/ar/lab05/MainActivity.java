@@ -97,15 +97,18 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        Intent intent = null;
+
         switch (id){
             case R.id.action_alta_usuario:
-                Intent intent = new Intent(this, AltaUsuarioActivity.class);
+                intent = new Intent(this, AltaUsuarioActivity.class);
                 startActivity(intent);
                 break;
 
-            case R.id.action_settings:
+            case R.id.action_buscar_tarea_desvio:
+                intent = new Intent(this, BuscarTareaDesvio.class);
+                startActivity(intent);
                 return true;
-
         }
 
         return super.onOptionsItemSelected(item);
