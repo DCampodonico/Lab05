@@ -117,8 +117,8 @@ public class ProyectoDAO {
 
     }
 
-    public void borrarTarea(Tarea t){
-
+    public void borrarTarea(Integer idTarea){
+        db.delete(ProyectoDBMetadata.TABLA_TAREAS, "_id=?", new String[]{idTarea.toString()});
     }
 
     public List<Prioridad> listarPrioridades(){
@@ -140,7 +140,7 @@ public class ProyectoDAO {
     public void actualizarMinutosTarea(Integer idTarea, int minutosAdicionales ){
 
         String[] columns = {"_id", ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS};
-        SQLiteDatabase mydb =dbHelper.getWritableDatabase();
+        SQLiteDatabase mydb = dbHelper.getWritableDatabase();
         Cursor result = mydb.query(ProyectoDBMetadata.TABLA_TAREAS, columns, "_id=?", new String[]{idTarea.toString()}, null, null, null);
 
         result.moveToFirst();

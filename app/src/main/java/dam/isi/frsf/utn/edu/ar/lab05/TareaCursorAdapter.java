@@ -18,7 +18,9 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
@@ -33,6 +35,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
@@ -137,6 +140,40 @@ public class TareaCursorAdapter extends CursorAdapter {
                     });
                     backGroundUpdate.start();
                 }
+            }
+        });
+
+        view.setTag(R.id.TAG_ONLINE_DESCRIPCION, cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA)));
+        view.setTag(R.id.TAG_ONLINE_ID, cursor.getInt(cursor.getColumnIndex("_id")));
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View v) {
+// Crear un builder y vincularlo a la actividad que lo mostrará
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+//Configurar las características
+                String s = v.getResources().getString(R.string.dialog_message);
+                s = String.format(s, v.getTag(R.id.TAG_ONLINE_DESCRIPCION).toString());
+                builder.setMessage(s)
+                        .setTitle(R.string.dialog_title)
+//Obtener una instancia de cuadro de dialogo
+                        .setPositiveButton(R.string.dialog_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        myDao.borrarTarea((Integer) v.getTag(R.id.TAG_ONLINE_ID));
+                        Toast.makeText(v.getContext(), R.string.exito_eliminar_tarea, Toast.LENGTH_LONG).show();
+                        handlerRefresh.sendEmptyMessage(1);
+                    }
+                })
+                        .setNegativeButton(R.string.dialog_cancelar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+//Mostrarlo
+                dialog.show();
+                return false;
             }
         });
     }

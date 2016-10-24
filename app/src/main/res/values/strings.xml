@@ -20,8 +20,6 @@
     <string name="app_name">Laboratorio05</string>
     <string name="action_settings">Settings</string>
     <string name="action_alta_usuario">Settings</string>
-    <item name="TAG_ONLINE_ID" type="id" />
-    <item name="TAG_ONLINE_tiempoComienzo" type="id"></item>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="error_horas_estimadas">Horas estimadas inválidas</string>
     <string name="error_prioridad">Prioridad inválida</string>
@@ -32,4 +30,9 @@
     <string name="tv_prioridad">Prioridad: </string>
     <string name="tv_minutos_asignados">Min. asignados: </string>
     <string name="tv_minutos_trabajados">Min. trabajados: </string>
+    <string name="dialog_message">¿Desea borrar la tarea %s?</string>
+    <string name="dialog_title">Confirmar eliminación</string>
+    <string name="dialog_aceptar">Aceptar</string>
+    <string name="dialog_cancelar">Cancelar</string>
+    <string name="exito_eliminar_tarea">Se ha eliminado la tarea</string>
 </resources>
