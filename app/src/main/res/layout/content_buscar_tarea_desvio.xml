@@ -37,30 +37,40 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textView_minutos_desvio" />
+        android:id="@+id/textViewMinutosDesvio" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:layout_below="@+id/textView_minutos_desvio"
+        android:layout_below="@+id/textViewMinutosDesvio"
         android:layout_alignParentStart="true"
-        android:id="@+id/editText_minutos_desvio" />
+        android:id="@+id/editTextMinutosDesvio"
+        android:singleLine="true"
+        android:selectAllOnFocus="false" />
 
     <Switch
         android:text="@string/switch_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText_minutos_desvio"
+        android:layout_below="@+id/editTextMinutosDesvio"
         android:layout_alignParentStart="true"
-        android:id="@+id/switch_tarea_terminada" />
+        android:id="@+id/switchTareaTerminada"
+        android:checked="true" />
 
     <Button
         android:text="@string/btn_buscar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/switch_tarea_terminada"
+        android:layout_below="@+id/switchTareaTerminada"
         android:layout_alignParentStart="true"
-        android:id="@+id/button_buscar" />
+        android:id="@+id/buttonBuscar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonBuscar"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textViewResultadoBusqueda" />
 </RelativeLayout>

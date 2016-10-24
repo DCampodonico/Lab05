@@ -40,4 +40,5 @@
     <string name="switch_text">Tarea terminada</string>
     <string name="tv_minutos_desvio">Minutos de desvío</string>
     <string name="btn_buscar">Buscar</string>
+    <string name="error_minutos_desvio">Minutos de desvío inválidos</string>
 </resources>

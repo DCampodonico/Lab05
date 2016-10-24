@@ -21,8 +21,20 @@ package dam.isi.frsf.utn.edu.ar.lab05;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class BuscarTareaDesvio extends AppCompatActivity {
+import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
+
+public class BuscarTareaDesvio extends AppCompatActivity implements View.OnClickListener {
+    EditText editTextMinutosDesvio;
+    Switch switchTareaTerminada;
+    TextView textViewResultadoBusqueda;
+    Button buttonBuscar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +43,36 @@ public class BuscarTareaDesvio extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        editTextMinutosDesvio = (EditText) findViewById(R.id.editTextMinutosDesvio);
+        switchTareaTerminada = (Switch) findViewById(R.id.switchTareaTerminada);
+        textViewResultadoBusqueda = (TextView) findViewById(R.id.textViewResultadoBusqueda);
+        buttonBuscar = (Button) findViewById(R.id.buttonBuscar);
+        buttonBuscar.setOnClickListener(this);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+    public void onClick(View v) {
+        String s = validar();
+        if(s.isEmpty()){
+            ProyectoDAO proyectoDAO = new ProyectoDAO(this);
+            String res = proyectoDAO.buscarDesvios(Integer.parseInt(editTextMinutosDesvio.getText().toString()), (switchTareaTerminada.isChecked()? 1 : 0));
+            textViewResultadoBusqueda.setText(res);
+        }
+        else{
+            Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private String validar() {
+        String resultado = "";
+        try{
+            Integer.parseInt(editTextMinutosDesvio.getText().toString().trim());
+        }
+        catch (Exception e){
+            resultado += getString(R.string.error_minutos_desvio);
+        }
+        return resultado;
+    }
 }
