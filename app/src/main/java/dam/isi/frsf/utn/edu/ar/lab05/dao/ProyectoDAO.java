@@ -27,6 +27,7 @@ import android.util.Log;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
@@ -171,5 +172,48 @@ public class ProyectoDAO {
         cursor.close();
         mydb.close();
         return prioridad;
+    }
+
+    public Tarea obtenerTarea(Integer id){
+        SQLiteDatabase mydb =dbHelper.getReadableDatabase();
+        Cursor cursor = mydb.query(true, ProyectoDBMetadata.TABLA_TAREAS, null, "_id=?", new String[]{id.toString()}, null, null, null, null);
+        Tarea tarea = new Tarea();
+        tarea.setId(id);
+        cursor.moveToFirst();
+        tarea.setHorasEstimadas(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS)));
+        tarea.setDescripcion(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA)));
+        tarea.setProyecto(this.obtenerProyecto(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO))));
+        tarea.setResponsable(this.obtenerUsuario(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE))));
+        tarea.setPrioridad(this.obtenerPrioridad(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD))));
+        tarea.setMinutosTrabajados(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS)));
+        tarea.setFinalizada(new Boolean(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA)) != 0));
+        cursor.close();
+        mydb.close();
+        return tarea;
+    }
+
+    public Proyecto obtenerProyecto(Integer id){
+        SQLiteDatabase mydb =dbHelper.getReadableDatabase();
+        Cursor cursor = mydb.query(true, ProyectoDBMetadata.TABLA_PROYECTO, null, "_id=?", new String[]{id.toString()}, null, null, null, null);
+        Proyecto proyecto = new Proyecto();
+        proyecto.setId(id);
+        cursor.moveToFirst();
+        proyecto.setNombre(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaProyectoMetadata.TITULO)));
+        cursor.close();
+        mydb.close();
+        return proyecto;
+    }
+
+    public Usuario obtenerUsuario(Integer id){
+        SQLiteDatabase mydb =dbHelper.getReadableDatabase();
+        Cursor cursor = mydb.query(true, ProyectoDBMetadata.TABLA_USUARIOS, null, "_id=?", new String[]{id.toString()}, null, null, null, null);
+        Usuario usuario = new Usuario();
+        usuario.setId(id);
+        cursor.moveToFirst();
+        usuario.setNombre(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO)));
+        usuario.setCorreoElectronico(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.MAIL)));
+        cursor.close();
+        mydb.close();
+        return usuario;
     }
 }

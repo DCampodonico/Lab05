@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intActAlta= new Intent(MainActivity.this,AltaTareaActivity.class);
+                Intent intActAlta= new Intent(MainActivity.this, AltaTareaActivity.class);
                 intActAlta.putExtra("ID_TAREA", 0);
                 startActivity(intActAlta);
             }

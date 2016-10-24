@@ -27,6 +27,7 @@
     <string name="error_prioridad">Prioridad inválida</string>
     <string name="error_descripcion">Descripción inválida</string>
     <string name="exito_nueva_tarea">Se ha creado una nueva tarea</string>
+    <string name="exito_modificar_tarea">Se ha modificado la tarea</string>
     <string name="tv_responsable">Responsable: </string>
     <string name="tv_prioridad">Prioridad: </string>
     <string name="tv_minutos_asignados">Min. asignados: </string>

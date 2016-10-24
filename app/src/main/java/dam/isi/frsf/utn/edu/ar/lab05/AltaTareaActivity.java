@@ -18,6 +18,7 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -38,6 +39,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
     SeekBar seekBarPrioridad;
     Button btnGuardar, btnCancelar;
     ProyectoDAO proyectoDAO;
+    Integer idTarea;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,19 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
 
         btnGuardar.setOnClickListener(this);
         btnCancelar.setOnClickListener(this);
+
+        Intent intent = getIntent();
+        idTarea = intent.getIntExtra("ID_TAREA", 0);
+        if(idTarea != 0){
+            cargarDatos(idTarea);
+        }
+    }
+
+    private void cargarDatos(Integer idTarea) {
+        Tarea t = proyectoDAO.obtenerTarea(idTarea);
+        editTextDescripcion.setText(t.getDescripcion());
+        editTextHorasEstimadas.setText(t.getHorasEstimadas().toString());
+        seekBarPrioridad.setProgress(t.getPrioridad().getId());
     }
 
     @Override
@@ -75,7 +90,12 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
                 //TODO t.setResponsable();
                 t.setResponsable(new Usuario(1, "", ""));
                 proyectoDAO.nuevaTarea(t);
-                Toast.makeText(this, R.string.exito_nueva_tarea, Toast.LENGTH_LONG).show();
+                if(idTarea == null){
+                    Toast.makeText(this, R.string.exito_nueva_tarea, Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(this, R.string.exito_modificar_tarea, Toast.LENGTH_LONG).show();
+                }
                 finish();
             }
             else{
