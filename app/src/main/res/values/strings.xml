@@ -19,7 +19,7 @@
 <resources>
     <string name="app_name">Laboratorio05</string>
     <string name="action_settings">Settings</string>
-    <string name="action_alta_usuario">Settings</string>
+    <string name="action_alta_usuario">Alta usuario</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="error_horas_estimadas">Horas estimadas inválidas</string>
     <string name="error_prioridad">Prioridad inválida</string>
@@ -44,4 +44,11 @@
     <string name="title_activity_alta_usuario">AltaUsuarioActivity</string>
     <string name="button_guardar">Guardar</string>
     <string name="button_cancelar">Cancelar</string>
+    <string name="title_activity_alta_tarea">Alta Tarea</string>
+    <string name="title_activity_editar_tarea">Editar Tarea</string>
+    <string name="action_nueva_tarea">Nueva tarea</string>
+    <string name="datos_usuario">Datos del usuario</string>
+    <string name="usuario_telefono">Teléfono</string>
+    <string name="usuario_email">Email</string>
+    <string name="usuario_nombre">Nombre</string>
 </resources>

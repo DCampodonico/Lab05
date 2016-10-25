@@ -36,10 +36,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:text="@string/datos_usuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView10"
+            android:textAppearance="@android:style/TextAppearance.Material.Large" />
+
         <TextView android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Nombre"
+            android:text="@string/usuario_nombre"
             android:id="@+id/textName"
             android:layout_marginEnd="70dp"/>
 
@@ -52,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Email" android:id="@+id/textEmail"/>
+            android:text="@string/usuario_email" android:id="@+id/textEmail"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -64,7 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Telefono" android:id="@+id/textPhone"/>
+            android:text="@string/usuario_telefono" android:id="@+id/textPhone"/>
 
         <EditText
             android:layout_width="match_parent"

@@ -20,20 +20,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="dam.isi.frsf.utn.edu.ar.lab05.MainActivity">
-    <item android:title="@string/action_nueva_tarea"
-        android:icon="@drawable/ic_nueva_tarea"
-        android:id="@+id/action_nueva_tarea"
-        android:orderInCategory="100"
-        android:visible="true"
-        app:showAsAction="always" />
     <item
         android:id="@+id/action_alta_usuario"
         android:orderInCategory="100"
         android:title="@string/action_alta_usuario"
-        android:icon="@drawable/ic_alta_usuario"
-        android:visible="true"
-        app:showAsAction="ifRoom" />
-    <item android:title="@string/action_buscar_tarea_desvio_title"
-        android:id="@+id/action_buscar_tarea_desvio" />
+        app:showAsAction="always"
+        android:icon="@drawable/ic_alta_usuario" />
 
 </menu>

@@ -97,9 +97,15 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        Intent intent = null;
+        Intent intent;
 
         switch (id){
+            case R.id.action_nueva_tarea:
+                Intent intActAlta= new Intent(MainActivity.this, AltaTareaActivity.class);
+                intActAlta.putExtra("ID_TAREA", 0);
+                startActivity(intActAlta);
+                break;
+
             case R.id.action_alta_usuario:
                 intent = new Intent(this, AltaUsuarioActivity.class);
                 startActivity(intent);
