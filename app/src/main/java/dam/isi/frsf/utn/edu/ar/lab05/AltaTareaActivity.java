@@ -90,7 +90,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
                 //TODO t.setResponsable();
                 t.setResponsable(new Usuario(1, "", ""));
                 proyectoDAO.nuevaTarea(t);
-                if(idTarea == null){
+                if(idTarea == 0){
                     Toast.makeText(this, R.string.exito_nueva_tarea, Toast.LENGTH_LONG).show();
                 }
                 else{

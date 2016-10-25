@@ -221,8 +221,10 @@ public class ProyectoDAO {
         String tareasEncontradas = "";
         SQLiteDatabase mydb =dbHelper.getReadableDatabase();
         Cursor cursor = mydb.rawQuery("SELECT *"+ " FROM "+ProyectoDBMetadata.TABLA_TAREAS + " WHERE "
-                + minutosDesvio + " <= " + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60 - "  + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS +
-                " AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " = " + terminado , null);
+                + minutosDesvio + " <= abs(" + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60 - "  + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS +
+                ") AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " = " + terminado , null);
+
+
         Log.d("SQL", "SELECT *"+ " FROM "+ProyectoDBMetadata.TABLA_TAREAS + " WHERE "
                 + minutosDesvio + " <= " + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60 - "  + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS +
                 " AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " = " + terminado);
