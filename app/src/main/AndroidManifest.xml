@@ -61,6 +61,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dam.isi.frsf.utn.edu.ar.lab05.MainActivity" />
         </activity>
+
     </application>
 
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 </manifest>

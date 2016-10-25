@@ -20,17 +20,28 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
@@ -44,6 +55,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
     Button btnGuardar, btnCancelar;
     ProyectoDAO proyectoDAO;
     Integer idTarea;
+    ArrayList<String> contactos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +68,14 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
 
         editTextDescripcion = (EditText) findViewById(R.id.editTextDescripcion);
         editTextHorasEstimadas = (EditText) findViewById(R.id.editTextHorasEstimadas);
+
         spinnerResponsable = (Spinner) findViewById(R.id.spinnerReponsable);
+
+        buscarContactos();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, contactos);
+        spinnerResponsable.setAdapter(adapter);
+
         seekBarPrioridad = (SeekBar) findViewById(R.id.seekBarPrioridad);
         btnGuardar = (Button) findViewById(R.id.btnGuardar);
         btnCancelar = (Button) findViewById(R.id.btnCanelar);
@@ -164,5 +183,51 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void buscarContactos(){
+        JSONArray arr = new JSONArray();
+        contactos = new ArrayList<>();
+        Uri uri =  ContactsContract.Contacts.CONTENT_URI;
+        String sortOrder =  ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+        final String[] projection = new String[] {
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.Contacts.HAS_PHONE_NUMBER, //Si se necesita numero de telefono
+        };
+        String selection = ContactsContract.Contacts.DISPLAY_NAME+" LIKE '%' AND " + ContactsContract.Contacts.HAS_PHONE_NUMBER + "='1'";
+        // consulta ejemplo buscando por nombre visualizado en los contactos agregados
+        Cursor c =this.getContentResolver().query(uri, projection, selection, null, sortOrder);
+        int count = c.getColumnCount();
+        int fila = 0;
+        String[] columnas= new String[count];
+        try {
+            while(c.moveToNext()) {
+                JSONObject unContacto = new JSONObject();
+                for(int i = 0; (i < count );  i++) {
+                    if(fila== 0)columnas[i]=c.getColumnName(i);
+                    unContacto.put(columnas[i],c.getString(i));
+                }
+                Log.d("TEST-ARR", unContacto.toString());
+                arr.put(fila,unContacto);
+                fila++;
+                Log.d("TEST-ARR","fila : "+fila);
+
+                //Si se necesita mail
+                /*
+                String id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
+                Cursor emailCur = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,null,ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", new String[]{id},null);
+                while (emailCur.moveToNext()) {
+                    String email = emailCur.getString( emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                    contactos.add(unContacto.getString(ContactsContract.Contacts.DISPLAY_NAME));
+                    Log.d("TEST-ARR", email);
+                    break;
+                }
+                */
+                contactos.add(unContacto.getString(ContactsContract.Contacts.DISPLAY_NAME));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
