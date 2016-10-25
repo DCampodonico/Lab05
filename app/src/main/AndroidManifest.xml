@@ -44,6 +44,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dam.isi.frsf.utn.edu.ar.lab05.MainActivity" />
         </activity>
+        <activity
+            android:name=".AltaUsuarioActivity"
+            android:label="@string/title_activity_alta_usuario"
+            android:parentActivityName=".AltaTareaActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dam.isi.frsf.utn.edu.ar.lab05.AltaTareaActivity" />
+        </activity>
     </application>
 
 </manifest>

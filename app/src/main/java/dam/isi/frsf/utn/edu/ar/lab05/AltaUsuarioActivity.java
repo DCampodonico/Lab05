@@ -23,12 +23,9 @@ import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
@@ -43,31 +40,15 @@ public class AltaUsuarioActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_alta_usuario);
+        setContentView(R.layout.activity_alta_usuario);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mName = (EditText) findViewById(R.id.editName);
         mEmailAddress = (EditText) findViewById(R.id.editEmail);
         mPhoneNumber = (EditText) findViewById(R.id.editPhone);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    agregarUsuarioAContactos();
-                    agregarUsuarioADBLocal();
-                    pushUsuario();
-                    finishActivity(1);
-                }
-                catch (Throwable t){
-
-                }
-            }
-        });
     }
 
     private void agregarUsuarioADBLocal() {
@@ -75,7 +56,6 @@ public class AltaUsuarioActivity extends AppCompatActivity {
         Usuario u = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim());
         myDao.nuevoUsuario(u);
     }
-
 
     private void pushUsuario() {
 
@@ -110,5 +90,5 @@ public class AltaUsuarioActivity extends AppCompatActivity {
 
         Log.d("INFO", "Se creo un nuevo contacto");
     }
-
 }
+

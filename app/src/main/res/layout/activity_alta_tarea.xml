@@ -96,12 +96,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Guardar"
+        android:text="@string/button_guardar"
         android:id="@+id/btnGuardar" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancelar"
+        android:text="@string/button_cancelar"
         android:id="@+id/btnCanelar" />
 </LinearLayout>
     </LinearLayout>

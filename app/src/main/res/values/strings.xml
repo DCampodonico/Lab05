@@ -41,4 +41,7 @@
     <string name="tv_minutos_desvio">Minutos de desvío</string>
     <string name="btn_buscar">Buscar</string>
     <string name="error_minutos_desvio">Minutos de desvío inválidos</string>
+    <string name="title_activity_alta_usuario">AltaUsuarioActivity</string>
+    <string name="button_guardar">Guardar</string>
+    <string name="button_cancelar">Cancelar</string>
 </resources>
