@@ -38,6 +38,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.util.HashMap;
+
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 
@@ -48,6 +50,8 @@ public class TareaCursorAdapter extends CursorAdapter {
     private LayoutInflater inflador;
     private ProyectoDAO myDao;
     private Context contexto;
+
+    private HashMap<Integer,Long> estados = new HashMap<>();
 
     public TareaCursorAdapter(Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
@@ -121,15 +125,24 @@ public class TareaCursorAdapter extends CursorAdapter {
             }
         });
 
-        btnEstado.setTag(R.id.TAG_ONLINE_ID, cursor.getInt(cursor.getColumnIndex("_id")));
+        Integer idTarea = cursor.getInt(cursor.getColumnIndex("_id"));
+        btnEstado.setTag(R.id.TAG_ONLINE_ID, idTarea);
+        if(estados.get(idTarea) != null){
+            btnEstado.setChecked(estados.get(idTarea) != 0);
+        }
+        else{
+            btnEstado.setOnCheckedChangeListener(null);
+            btnEstado.setChecked(false);
+        }
         btnEstado.setOnCheckedChangeListener(new ToggleButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 final Integer idTarea = (Integer) buttonView.getTag(R.id.TAG_ONLINE_ID);
                 if (isChecked) {
-                    btnEstado.setTag(R.id.TAG_ONLINE_tiempoComienzo, System.currentTimeMillis());
+                    //btnEstado.setTag(R.id.TAG_ONLINE_tiempoComienzo, System.currentTimeMillis());
+                    estados.put(idTarea,System.currentTimeMillis());
                     Log.d("LAB05-MAIN", "comenzar a trabajar : --- " + idTarea);
                 } else {
-                    final Integer minutosTranscurridos = (int) (long) ((System.currentTimeMillis() - (Long) btnEstado.getTag(R.id.TAG_ONLINE_tiempoComienzo)) / 1000 * 12 / 60);
+                    final Integer minutosTranscurridos = (int) (long) ((System.currentTimeMillis() - (Long) btnEstado.getTag(idTarea)) / 1000 * 12 / 60);
                     Thread backGroundUpdate = new Thread(new Runnable() {
                         @Override
                         public void run() {
