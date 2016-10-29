@@ -35,6 +35,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -42,8 +43,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
@@ -52,10 +56,12 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
     EditText editTextDescripcion, editTextHorasEstimadas;
     Spinner spinnerResponsable;
     SeekBar seekBarPrioridad;
+    TextView textViewPrioridad;
     Button btnGuardar, btnCancelar;
     ProyectoDAO proyectoDAO;
     Integer idTarea;
     ArrayList<String> contactos;
+    ArrayList<Prioridad> prioridades;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +82,39 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
                 android.R.layout.simple_spinner_item, contactos);
         spinnerResponsable.setAdapter(adapter);
 
+        proyectoDAO = new ProyectoDAO(this);
+
         seekBarPrioridad = (SeekBar) findViewById(R.id.seekBarPrioridad);
+        prioridades = new ArrayList<>();
+        prioridades.addAll(proyectoDAO.listarPrioridades());
+        Collections.sort(prioridades, new Comparator<Prioridad>() {
+            @Override
+            public int compare(Prioridad prioridad1, Prioridad prioridad2)
+            {
+                return  prioridad1.getId().compareTo(prioridad2.getId());
+            }
+        });
+        textViewPrioridad = (TextView) findViewById(R.id.textViewPrioridad);
+        seekBarPrioridad.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                textViewPrioridad.setText(prioridades.get(progress).getPrioridad());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        seekBarPrioridad.setProgress(3);
+        seekBarPrioridad.setProgress(0);
         btnGuardar = (Button) findViewById(R.id.btnGuardar);
         btnCancelar = (Button) findViewById(R.id.btnCanelar);
-        proyectoDAO = new ProyectoDAO(this);
 
         btnGuardar.setOnClickListener(this);
         btnCancelar.setOnClickListener(this);
@@ -116,7 +151,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
                 t.setFinalizada(false);
                 t.setHorasEstimadas(Integer.parseInt(editTextHorasEstimadas.getText().toString().trim()));
                 t.setMinutosTrabajados(0);
-                t.setPrioridad(proyectoDAO.obtenerPrioridad(seekBarPrioridad.getProgress()));
+                t.setPrioridad(prioridades.get(seekBarPrioridad.getProgress()));
                 //TODO t.setProyecto();
                 t.setProyecto(new Proyecto(1, ""));
                 //TODO t.setResponsable();
@@ -149,7 +184,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
             res += (res.isEmpty()? "" : "\n") + getString(R.string.error_horas_estimadas);
         }
 
-        if(seekBarPrioridad.getProgress()<1 || seekBarPrioridad.getProgress()>4){
+        if(seekBarPrioridad.getProgress()<0 || seekBarPrioridad.getProgress()>3){
             res += (res.isEmpty()? "" : "\n") + getString(R.string.error_prioridad);
         }
 

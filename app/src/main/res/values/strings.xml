@@ -51,4 +51,6 @@
     <string name="usuario_telefono">Teléfono</string>
     <string name="usuario_email">Email</string>
     <string name="usuario_nombre">Nombre</string>
+    <string name="textViewDescripcion">Descripción</string>
+    <string name="tectViewTareasDesvios">Buscar Tareas Desviadas</string>
 </resources>

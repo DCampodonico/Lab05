@@ -1,0 +1,14 @@
+{
+  "proyectos": [
+    { "id": 1, "nombre": "Proyecto 1" }
+  ],
+  "prioridades": [
+    { "id": 1, "prioridad": "alta" }
+  ],
+  "usuarios": [
+    { "id": 1, "nombre": "martin","correoElectronico":"mart@mail.com" }
+  ],
+  "tareas": [
+    { "id": 1,"descripcion": "test1", "horasEstimadas": 5,"minutosTrabajados":150,"finalizada":0,"proyectoId":1,"prioridadId":1,"usuarioId":1  }
+  ]
+}

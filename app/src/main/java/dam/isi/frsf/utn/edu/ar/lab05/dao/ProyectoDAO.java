@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
@@ -122,7 +123,19 @@ public class ProyectoDAO {
     }
 
     public List<Prioridad> listarPrioridades(){
-        return null;
+        List<Prioridad> prioridades = new ArrayList<>();
+        SQLiteDatabase mydb =dbHelper.getReadableDatabase();
+        Cursor cursor = mydb.query(true, ProyectoDBMetadata.TABLA_PRIORIDAD, null, null, null, null, null, null, null);
+        while(cursor.moveToNext()){
+            Prioridad prioridad = new Prioridad();
+            prioridad.setId(cursor.getInt(cursor.getColumnIndex("_ID")));
+            prioridad.setPrioridad(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD)));
+            prioridades.add(prioridad);
+        }
+        cursor.close();
+        mydb.close();
+        return prioridades;
+
     }
 
     public List<Usuario> listarUsuarios(){

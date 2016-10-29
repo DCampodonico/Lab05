@@ -31,46 +31,62 @@
     tools:context="dam.isi.frsf.utn.edu.ar.lab05.BuscarTareaDesvio"
     tools:showIn="@layout/activity_buscar_tarea_desvio">
 
-    <TextView
-        android:text="@string/tv_minutos_desvio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/textViewMinutosDesvio" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:layout_below="@+id/textViewMinutosDesvio"
-        android:layout_alignParentStart="true"
-        android:id="@+id/editTextMinutosDesvio"
-        android:singleLine="true"
-        android:selectAllOnFocus="false" />
+        <TextView
+            android:text="@string/tectViewTareasDesvios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/textView11"
+            android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
-    <Switch
-        android:text="@string/switch_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextMinutosDesvio"
-        android:layout_alignParentStart="true"
-        android:id="@+id/switchTareaTerminada"
-        android:checked="true" />
+        <TextView
+            android:text="@string/tv_minutos_desvio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/textViewMinutosDesvio" />
 
-    <Button
-        android:text="@string/btn_buscar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/switchTareaTerminada"
-        android:layout_alignParentStart="true"
-        android:id="@+id/buttonBuscar" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:layout_below="@+id/textViewMinutosDesvio"
+            android:layout_alignParentStart="true"
+            android:id="@+id/editTextMinutosDesvio"
+            android:singleLine="true"
+            android:selectAllOnFocus="false" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonBuscar"
-        android:layout_alignParentStart="true"
-        android:id="@+id/textViewResultadoBusqueda" />
+        <Switch
+            android:text="@string/switch_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextMinutosDesvio"
+            android:layout_alignParentStart="true"
+            android:id="@+id/switchTareaTerminada"
+            android:checked="true" />
+
+        <Button
+            android:text="@string/btn_buscar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/switchTareaTerminada"
+            android:layout_alignParentStart="true"
+            android:id="@+id/buttonBuscar" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/buttonBuscar"
+            android:layout_alignParentStart="true"
+            android:id="@+id/textViewResultadoBusqueda" />
+    </LinearLayout>
+
 </RelativeLayout>
