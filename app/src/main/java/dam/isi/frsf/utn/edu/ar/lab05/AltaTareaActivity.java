@@ -183,7 +183,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
 			res += (res.isEmpty()? "" : "\n") + getString(R.string.error_prioridad);
 		}
 
-		//TODO validar spinner
+		//TODO validar spinner??
 
 		return res;
 	}

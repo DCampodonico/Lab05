@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import dam.isi.frsf.utn.edu.ar.lab05.dao.Post;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
@@ -63,8 +64,8 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
         myDao.nuevoUsuario(usuario);
     }
 
-    private void pushUsuario() {
-
+    private void pushUsuario(Usuario usuario) {
+	    new Post().execute(usuario);
     }
 
     private void agregarUsuarioAContactos(Usuario usuario){
@@ -110,6 +111,7 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
 				Usuario usuario = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim(), mPhoneNumber.getText().toString().trim());
 				this.agregarUsuarioAContactos(usuario);
 				this.agregarUsuarioADBLocal(usuario);
+				this.pushUsuario(usuario);
 				Toast.makeText(this, R.string.Alta_usuario_exito, Toast.LENGTH_LONG).show();
 				finish();
 			}
