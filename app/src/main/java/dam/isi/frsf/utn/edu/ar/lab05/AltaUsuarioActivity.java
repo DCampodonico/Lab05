@@ -53,7 +53,8 @@ public class AltaUsuarioActivity extends AppCompatActivity {
 
     private void agregarUsuarioADBLocal() {
         ProyectoDAO myDao = new ProyectoDAO(this);
-        Usuario u = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim());
+        Usuario u = new Usuario(null, mName.getText().toString().trim(),
+                mEmailAddress.getText().toString().trim(), mPhoneNumber.getText().toString().trim());
         myDao.nuevoUsuario(u);
     }
 

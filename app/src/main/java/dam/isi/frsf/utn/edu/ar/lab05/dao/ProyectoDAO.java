@@ -92,13 +92,14 @@ public class ProyectoDAO {
         return cursor;
     }
 
-    public void nuevaTarea(Tarea t){
+    public void crearOActualizarTarea(Tarea t){
         ContentValues valores = new ContentValues();
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, t.getMinutosTrabajados());
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA, t.getFinalizada());
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS, t.getHorasEstimadas());
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD, t.getPrioridad().getId());
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO, t.getProyecto().getId());
+	    t.getResponsable().setId(this.buscarOCrearUsuario(t.getResponsable()));
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE, t.getResponsable().getId());
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA, t.getDescripcion());
         SQLiteDatabase mydb =dbHelper.getWritableDatabase();
@@ -106,16 +107,30 @@ public class ProyectoDAO {
         mydb.close();
     }
 
-    public void nuevoUsuario(Usuario u){
-        ContentValues valores = new ContentValues();
-        valores.put(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO,u.getNombre());
-        valores.put(ProyectoDBMetadata.TablaUsuariosMetadata.MAIL,u.getCorreoElectronico());
-        SQLiteDatabase mydb =dbHelper.getWritableDatabase();
-        mydb.insert(ProyectoDBMetadata.TABLA_USUARIOS, ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO,valores);
-        mydb.close();
-    }
-    public void actualizarTarea(Tarea t){
+	private Integer buscarOCrearUsuario(Usuario usuario) {
+		if(usuario.getId() != null){
+			return usuario.getId();
+		}
+		SQLiteDatabase mydb =dbHelper.getReadableDatabase();
+		Cursor cursor = mydb.query(true, ProyectoDBMetadata.TABLA_USUARIOS, null, ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO + " =?", new String[]{usuario.getNombre()}, null, null, null, null);
+		if(cursor.getCount() == 0){
+			return this.nuevoUsuario(usuario);
+		}
+		else {
+			cursor.moveToFirst();
+			return cursor.getInt(cursor.getColumnIndex("_ID"));
+		}
+	}
 
+	public Integer nuevoUsuario(Usuario usuario){
+        ContentValues valores = new ContentValues();
+        valores.put(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO,usuario.getNombre());
+        valores.put(ProyectoDBMetadata.TablaUsuariosMetadata.MAIL,usuario.getCorreoElectronico());
+        valores.put(ProyectoDBMetadata.TablaUsuariosMetadata.TELEFONO, usuario.getTelefono());
+        SQLiteDatabase mydb =dbHelper.getWritableDatabase();
+        Long id = mydb.insert(ProyectoDBMetadata.TABLA_USUARIOS, ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO,valores);
+        mydb.close();
+		return id.intValue();
     }
 
     public void borrarTarea(Integer idTarea){
@@ -168,13 +183,6 @@ public class ProyectoDAO {
         mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
     }
 
-    public List<Tarea> listarDesviosPlanificacion(Boolean soloTerminadas,Integer desvioMaximoMinutos){
-        // retorna una lista de todas las tareas que tardaron más (en exceso) o menos (por defecto)
-        // que el tiempo planificado.
-        // si la bandera soloTerminadas es true, se busca en las tareas terminadas, sino en todas.
-        return null;
-    }
-
     public Prioridad obtenerPrioridad(Integer id){
         SQLiteDatabase mydb =dbHelper.getReadableDatabase();
         Cursor cursor = mydb.query(true, ProyectoDBMetadata.TABLA_PRIORIDAD, null, "_id=?", new String[]{id.toString()}, null, null, null, null);
@@ -225,22 +233,23 @@ public class ProyectoDAO {
         cursor.moveToFirst();
         usuario.setNombre(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO)));
         usuario.setCorreoElectronico(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.MAIL)));
-        cursor.close();
+        usuario.setTelefono(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.TELEFONO)));
+	    cursor.close();
         mydb.close();
         return usuario;
     }
 
-    public String buscarDesvios(int minutosDesvio, Integer terminado) {
+    public String buscarDesvios(int minutosDesvio, Integer soloTerminados) {
         String tareasEncontradas = "";
         SQLiteDatabase mydb =dbHelper.getReadableDatabase();
         Cursor cursor = mydb.rawQuery("SELECT *"+ " FROM "+ProyectoDBMetadata.TABLA_TAREAS + " WHERE "
                 + minutosDesvio + " <= abs(" + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60 - "  + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS +
-                ") AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " = " + terminado , null);
+                ") AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " >= " + soloTerminados , null);
 
 
         Log.d("SQL", "SELECT *"+ " FROM "+ProyectoDBMetadata.TABLA_TAREAS + " WHERE "
-                + minutosDesvio + " <= " + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60 - "  + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS +
-                " AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " = " + terminado);
+		        + minutosDesvio + " <= abs(" + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60 - "  + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS +
+		        ") AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " >= " + soloTerminados);
         while(cursor.moveToNext()){
             tareasEncontradas += (tareasEncontradas.isEmpty()? "" : "\n") + cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA));
         }
