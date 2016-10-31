@@ -18,29 +18,11 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05.dao;
 
-import org.json.JSONObject;
-
-import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
+import java.util.List;
 
 /**
- * Created by martdominguez on 20/10/2016.
+ * Created by daniel on 31/10/16.
  */
-public class ProyectoApiRest {
-
-	public void crearProyecto(Proyecto p){
-
-	}
-	public void borrarProyecto(Integer id){
-
-	}
-	public void actualizarProyecto(Proyecto p){
-
-	}
-
-	public Proyecto buscarProyecto(Integer id){
-		RestClient cliRest = new RestClient();
-		JSONObject t = cliRest.getById(1,"proyectos");
-		// transformar el objeto JSON a proyecto y retornarlo
-		return null;
-	}
+public interface BusquedaFinalizadaListener<T> {
+	void busquedaFinalizada(List<T> proyectos);
 }

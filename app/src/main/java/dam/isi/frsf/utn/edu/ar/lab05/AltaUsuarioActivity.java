@@ -31,7 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import dam.isi.frsf.utn.edu.ar.lab05.dao.Post;
+import dam.isi.frsf.utn.edu.ar.lab05.dao.PostUsuario;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
@@ -65,7 +65,7 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void pushUsuario(Usuario usuario) {
-	    new Post().execute(usuario);
+	    new PostUsuario().execute(usuario);
     }
 
     private void agregarUsuarioAContactos(Usuario usuario){

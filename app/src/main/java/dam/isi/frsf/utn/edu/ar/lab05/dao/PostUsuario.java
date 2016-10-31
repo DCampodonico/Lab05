@@ -33,7 +33,7 @@ import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
-public class Post extends AsyncTask<Usuario,Integer,List<Usuario>>{
+public class PostUsuario extends AsyncTask<Usuario,Integer,List<Usuario>>{
 	@Override
 	protected List<Usuario> doInBackground(Usuario... usuarios) {
 		final String IP_SERVER = "192.168.1.104";
@@ -51,7 +51,7 @@ public class Post extends AsyncTask<Usuario,Integer,List<Usuario>>{
 				byte[] data=str.getBytes("UTF-8");
 				Log.d("EjemploPost","str---> "+str);
 
-				URL url = new URL("http://192.168.1.104:4000/usuarios/");
+				URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER +"/usuarios/");
 
 				// VER AQUI https://developer.android.com/reference/java/net/HttpURLConnection.html
 				urlConnection = (HttpURLConnection) url.openConnection();
