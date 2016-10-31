@@ -216,6 +216,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
 	}
 
 	public void buscarContactos(){
+		//TODO pedir permisos
 		contactos = new ArrayList<>();
 		Uri uri =  ContactsContract.Contacts.CONTENT_URI;
 		String sortOrder =  ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";

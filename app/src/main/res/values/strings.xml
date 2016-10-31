@@ -53,4 +53,5 @@
     <string name="usuario_nombre">Nombre</string>
     <string name="textViewDescripcion">Descripción</string>
     <string name="tectViewTareasDesvios">Buscar Tareas Desviadas</string>
+    <string name="Alta_usuario_exito">Usuario creado con éxito</string>
 </resources>

@@ -26,17 +26,20 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
-public class AltaUsuarioActivity extends AppCompatActivity {
+public class AltaUsuarioActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText mName;
     EditText mEmailAddress;
     EditText mPhoneNumber;
-
+	Button buttonAltaUsuarioGuardar, buttonAltaUsuarioCancelar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,20 +52,23 @@ public class AltaUsuarioActivity extends AppCompatActivity {
         mName = (EditText) findViewById(R.id.editName);
         mEmailAddress = (EditText) findViewById(R.id.editEmail);
         mPhoneNumber = (EditText) findViewById(R.id.editPhone);
+	    buttonAltaUsuarioGuardar = (Button) findViewById(R.id.buttonAltaUsuarioGuardar);
+	    buttonAltaUsuarioCancelar = (Button) findViewById(R.id.buttonAltaUsuarioCancelar);
+	    buttonAltaUsuarioGuardar.setOnClickListener(this);
+	    buttonAltaUsuarioCancelar.setOnClickListener(this);
     }
 
-    private void agregarUsuarioADBLocal() {
+    private void agregarUsuarioADBLocal(Usuario usuario) {
         ProyectoDAO myDao = new ProyectoDAO(this);
-        Usuario u = new Usuario(null, mName.getText().toString().trim(),
-                mEmailAddress.getText().toString().trim(), mPhoneNumber.getText().toString().trim());
-        myDao.nuevoUsuario(u);
+        myDao.nuevoUsuario(usuario);
     }
 
     private void pushUsuario() {
 
     }
 
-    private void agregarUsuarioAContactos(){
+    private void agregarUsuarioAContactos(Usuario usuario){
+	    //TODO pedir permisos
         String accountType =null;
         String accountName =null;
         ContentValues values = new ContentValues();
@@ -74,22 +80,48 @@ public class AltaUsuarioActivity extends AppCompatActivity {
         values.clear();
         values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, mName.getText().toString().trim());
+        values.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, usuario.getNombre());
         getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
 
         values.clear();
         values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.Email.DATA, mEmailAddress.getText().toString().trim());
+        values.put(ContactsContract.CommonDataKinds.Email.DATA, usuario.getCorreoElectronico());
         getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
 
         values.clear();
         values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.Phone.DATA, mPhoneNumber.getText().toString().trim());
+        values.put(ContactsContract.CommonDataKinds.Phone.DATA, usuario.getTelefono());
         getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
 
         Log.d("INFO", "Se creo un nuevo contacto");
     }
+
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		if(id == buttonAltaUsuarioCancelar.getId()){
+			finish();
+		}
+		else if(id == buttonAltaUsuarioGuardar.getId()){
+			String errores = validar();
+			if(errores.equals("")){
+				Usuario usuario = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim(), mPhoneNumber.getText().toString().trim());
+				this.agregarUsuarioAContactos(usuario);
+				this.agregarUsuarioADBLocal(usuario);
+				Toast.makeText(this, R.string.Alta_usuario_exito, Toast.LENGTH_LONG).show();
+				finish();
+			}
+			else{
+				Toast.makeText(this, errores, Toast.LENGTH_LONG).show();
+			}
+		}
+		}
+
+	private String validar() {
+		//TODO validar alta usuario
+		return "";
+	}
 }
 
