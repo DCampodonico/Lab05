@@ -18,9 +18,12 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -53,6 +56,32 @@ public class ProyectosActivity extends AppCompatActivity implements BusquedaFina
 		new ListarProyectosTask(this).execute();
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_proyectos, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+
+		Intent intent;
+
+		switch (id){
+			case R.id.action_alta_proyecto:
+				intent = new Intent(this, AltaProyectoActivity.class);
+				intent.putExtra("ID_PROYECTO", 0);
+				startActivity(intent);
+				break;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
 
 	@Override
 	public void busquedaFinalizada(List<Proyecto> proyectos) {

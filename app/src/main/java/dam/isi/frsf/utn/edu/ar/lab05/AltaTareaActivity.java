@@ -151,6 +151,9 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
 				//TODO t.setProyecto();
 				t.setProyecto(new Proyecto(1, ""));
 				t.setResponsable(((Usuario) spinnerResponsable.getSelectedItem()));
+				if(idTarea != 0) {
+					t.setId(idTarea);
+				}
 				proyectoDAO.crearOActualizarTarea(t);
 				if(idTarea == 0){
 					Toast.makeText(this, R.string.exito_nueva_tarea, Toast.LENGTH_LONG).show();

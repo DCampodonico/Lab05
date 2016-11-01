@@ -37,9 +37,10 @@ public class ProyectoAdapter extends ArrayAdapter<Proyecto>{
 
 	private LayoutInflater inflater;
 	private Context context;
-
+	private List<Proyecto> proyectos;
 	public ProyectoAdapter(Context context, List<Proyecto> items) {
 		super(context, R.layout.fila_proyecto, items);
+		proyectos = items;
 		inflater = LayoutInflater.from(context);
 	}
 
@@ -52,6 +53,27 @@ public class ProyectoAdapter extends ArrayAdapter<Proyecto>{
 		final Button buttonProyectoVerTareas = (Button) convertView.findViewById(R.id.buttonProyectoVerTareas);
 		final Button buttonProyectoEditar = (Button) convertView.findViewById(R.id.buttonProyectoEditar);
 		final Button buttonProyectoEliminar = (Button) convertView.findViewById(R.id.buttonProyectoEliminar);
+
+		buttonProyectoEditar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
+
+		buttonProyectoEliminar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
+
+		buttonProyectoVerTareas.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
 
 		return convertView;
 	}

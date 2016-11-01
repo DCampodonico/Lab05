@@ -103,8 +103,12 @@ public class ProyectoDAO {
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE, t.getResponsable().getId());
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA, t.getDescripcion());
         SQLiteDatabase mydb =dbHelper.getWritableDatabase();
-        mydb.insert(ProyectoDBMetadata.TABLA_TAREAS, ProyectoDBMetadata.TablaTareasMetadata.TAREA, valores);
-        mydb.close();
+	    if(t.getId() == null){
+		    mydb.insert(ProyectoDBMetadata.TABLA_TAREAS, ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, valores);
+	    }
+	    else{
+		    mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores,  "_ID = ?", new String[]{t.getId().toString()});
+	    }        mydb.close();
     }
 
 	private Integer buscarOCrearUsuario(Usuario usuario) {
@@ -134,7 +138,7 @@ public class ProyectoDAO {
     }
 
     public void borrarTarea(Integer idTarea){
-        db.delete(ProyectoDBMetadata.TABLA_TAREAS, "_id=?", new String[]{idTarea.toString()});
+        db.delete(ProyectoDBMetadata.TABLA_TAREAS, ProyectoDBMetadata.TablaTareasMetadata._ID + " = ?", new String[]{idTarea.toString()});
     }
 
     public List<Prioridad> listarPrioridades(){
@@ -150,7 +154,6 @@ public class ProyectoDAO {
         cursor.close();
         mydb.close();
         return prioridades;
-
     }
 
     public List<Usuario> listarUsuarios(){
@@ -162,14 +165,14 @@ public class ProyectoDAO {
         ContentValues valores = new ContentValues();
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA,1);
         SQLiteDatabase mydb =dbHelper.getWritableDatabase();
-        mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
+        mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, ProyectoDBMetadata.TablaTareasMetadata._ID + " = ?", new String[]{idTarea.toString()});
     }
 
     public void actualizarMinutosTarea(Integer idTarea, int minutosAdicionales ){
 
         String[] columns = {"_id", ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS};
         SQLiteDatabase mydb = dbHelper.getWritableDatabase();
-        Cursor result = mydb.query(ProyectoDBMetadata.TABLA_TAREAS, columns, "_id=?", new String[]{idTarea.toString()}, null, null, null);
+        Cursor result = mydb.query(ProyectoDBMetadata.TABLA_TAREAS, columns, ProyectoDBMetadata.TablaTareasMetadata._ID + " = ?", new String[]{idTarea.toString()}, null, null, null);
 
         result.moveToFirst();
         int minutosTrabajados = result.getInt(1);
@@ -180,7 +183,7 @@ public class ProyectoDAO {
         ContentValues valores = new ContentValues();
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS, minutosTrabajados);
 
-        mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
+        mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, ProyectoDBMetadata.TablaTareasMetadata._ID + " = ?", new String[]{idTarea.toString()});
     }
 
     public Prioridad obtenerPrioridad(Integer id){
@@ -256,5 +259,21 @@ public class ProyectoDAO {
         cursor.close();
         mydb.close();
         return tareasEncontradas;
+    }
+
+    public Integer crearOActualizarProyecto(Proyecto proyecto) {
+	    ContentValues valores = new ContentValues();
+	    valores.put(ProyectoDBMetadata.TablaProyectoMetadata.TITULO, proyecto.getNombre());
+	    SQLiteDatabase mydb = dbHelper.getWritableDatabase();
+	    if(proyecto.getId() == null){
+		    Long id = mydb.insert(ProyectoDBMetadata.TABLA_PROYECTO, ProyectoDBMetadata.TablaProyectoMetadata.TITULO, valores);
+	        mydb.close();
+		    return id.intValue();
+	    }
+	    else{
+		    mydb.update(ProyectoDBMetadata.TABLA_PROYECTO, valores, "_ID = ?", new String[]{proyecto.getId().toString()});
+		    mydb.close();
+		    return proyecto.getId();
+	    }
     }
 }

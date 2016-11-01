@@ -20,11 +20,14 @@
     <string name="app_name">Laboratorio05</string>
     <string name="action_settings">Settings</string>
     <string name="action_alta_usuario">Alta usuario</string>
+    <string name="action_alta_proyecto">Alta proyecto</string>
     <string name="error_horas_estimadas">Horas estimadas inválidas</string>
     <string name="error_prioridad">Prioridad inválida</string>
     <string name="error_descripcion">Descripción inválida</string>
     <string name="exito_nueva_tarea">Se ha creado una nueva tarea</string>
     <string name="exito_modificar_tarea">Se ha modificado la tarea</string>
+    <string name="exito_nuevo_proyecto">Se ha creado un nuevo proyecto</string>
+    <string name="exito_modificar_proyecto">Se ha modificado el proyecto</string>
     <string name="tv_responsable">Responsable: </string>
     <string name="tv_prioridad">Prioridad: </string>
     <string name="tv_minutos_asignados">Min. asignados: </string>
@@ -58,4 +61,9 @@
     <string name="button_editar">Editar</string>
     <string name="button_eliminar">Eliminar</string>
     <string name="action_proyectos">Ver proyectos</string>
+    <string name="title_activity_alta_proyecto">Alta Proyecto</string>
+    <string name="datos_alta_proyecto">Datos del proyecto</string>
+    <string name="proyecto_nombre">Nombre</string>
+    <string name="error_nombre_proyecto">Nombre inválido</string>
+    <string name="title_activity_editar_proyecto">Editar proyecto</string>
 </resources>
