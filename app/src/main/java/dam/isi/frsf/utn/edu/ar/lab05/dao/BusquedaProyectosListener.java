@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * Created by daniel on 31/10/16.
  */
-public interface BusquedaFinalizadaListener<T> {
+public interface BusquedaProyectosListener<T> {
 	void busquedaFinalizada(List<T> proyectos);
+	void busquedaIniciada();
 }

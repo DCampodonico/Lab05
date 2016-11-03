@@ -21,4 +21,5 @@
     <item name="TAG_ONLINE_DESCRIPCION" type="id"></item>
     <item name="TAG_ONLINE_ID" type="id" />
     <item name="TAG_ONLINE_tiempoComienzo" type="id"></item>
+    <item name="TAG_ONLINE_PROYECTO" type="id"></item>
 </resources>

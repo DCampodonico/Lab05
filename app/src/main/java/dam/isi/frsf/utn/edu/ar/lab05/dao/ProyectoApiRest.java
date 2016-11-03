@@ -18,28 +18,44 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05.dao;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 /**
  * Created by martdominguez on 20/10/2016.
  */
 public class ProyectoApiRest {
 
+	public static String IP_SERVER = "192.168.1.106";
+	public static String PORT_SERVER = "4000";
+	private RestClient restClient = new RestClient();
 	public void crearProyecto(Proyecto p){
-
 	}
-	public void borrarProyecto(Integer id){
 
+	public void crearUsuario(Usuario usuario){
+		JSONObject nuevoUsuario= new JSONObject();
+		try {
+			nuevoUsuario.put("id",usuario.getId());
+			nuevoUsuario.put("nombre",usuario.getNombre());
+			nuevoUsuario.put("correoElectronico", usuario.getCorreoElectronico());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		restClient.crear(nuevoUsuario, "usuarios");
+	}
+
+	public void borrarProyecto(Integer id){
+		restClient.borrar(id, "proyectos");
 	}
 	public void actualizarProyecto(Proyecto p){
 
 	}
 
 	public Proyecto buscarProyecto(Integer id){
-		RestClient cliRest = new RestClient();
-		JSONObject t = cliRest.getById(1,"proyectos");
+		JSONObject t = restClient.getById(1,"proyectos");
 		// transformar el objeto JSON a proyecto y retornarlo
 		return null;
 	}

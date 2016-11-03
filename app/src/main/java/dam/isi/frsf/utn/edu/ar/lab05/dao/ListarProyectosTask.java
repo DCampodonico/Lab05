@@ -36,11 +36,19 @@ import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 
-public class ListarProyectosTask extends AsyncTask<String, Void, List<Proyecto>> {
-		private BusquedaFinalizadaListener<Proyecto> listener;
+import static dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest.IP_SERVER;
+import static dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest.PORT_SERVER;
 
-		public ListarProyectosTask(BusquedaFinalizadaListener<Proyecto> dListener){
+public class ListarProyectosTask extends AsyncTask<String, Void, List<Proyecto>> {
+		private BusquedaProyectosListener<Proyecto> listener;
+
+		public ListarProyectosTask(BusquedaProyectosListener<Proyecto> dListener){
 			this.listener = dListener;
+		}
+
+		@Override
+		protected  void onPreExecute(){
+			listener.busquedaIniciada() ;
 		}
 
 		@Override
@@ -50,8 +58,6 @@ public class ListarProyectosTask extends AsyncTask<String, Void, List<Proyecto>>
 
 		@Override
 		protected List<Proyecto> doInBackground(String... urls) {
-			final String IP_SERVER = "192.168.1.104";
-			final String PORT_SERVER = "4000";
 			final StringBuilder sb = new StringBuilder();
 			final ArrayList<Proyecto> proyectos = new ArrayList<>();
 			HttpURLConnection urlConnection = null;

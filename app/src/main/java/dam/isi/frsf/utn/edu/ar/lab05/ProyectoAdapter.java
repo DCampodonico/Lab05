@@ -19,6 +19,7 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 
 /**
@@ -37,10 +39,11 @@ public class ProyectoAdapter extends ArrayAdapter<Proyecto>{
 
 	private LayoutInflater inflater;
 	private Context context;
-	private List<Proyecto> proyectos;
-	public ProyectoAdapter(Context context, List<Proyecto> items) {
+	private ProyectoApiRest proyectoApiRest;
+	public ProyectoAdapter(Context context, List<Proyecto> items, ProyectoApiRest proyectoApiRest) {
 		super(context, R.layout.fila_proyecto, items);
-		proyectos = items;
+		this.context = context;
+		this.proyectoApiRest = proyectoApiRest;
 		inflater = LayoutInflater.from(context);
 	}
 
@@ -49,29 +52,34 @@ public class ProyectoAdapter extends ArrayAdapter<Proyecto>{
 		if (convertView == null) convertView = inflater.inflate(R.layout.fila_proyecto, parent, false);
 		TextView textViewProyectoNombre = (TextView) convertView.findViewById(R.id.textViewProyectoNombre);
 		textViewProyectoNombre.setText(this.getItem(position).getNombre());
-
 		final Button buttonProyectoVerTareas = (Button) convertView.findViewById(R.id.buttonProyectoVerTareas);
 		final Button buttonProyectoEditar = (Button) convertView.findViewById(R.id.buttonProyectoEditar);
 		final Button buttonProyectoEliminar = (Button) convertView.findViewById(R.id.buttonProyectoEliminar);
 
+		buttonProyectoEditar.setTag(this.getItem(position));
 		buttonProyectoEditar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
+				final Proyecto proyecto = (Proyecto) buttonProyectoEditar.getTag();
+				Intent intentEditarProyecto = new Intent(context, AltaProyectoActivity.class);
+				intentEditarProyecto.putExtra("ID_PROYECTO", proyecto.getId());
+				intentEditarProyecto.putExtra("NOMBRE_PROYECTO", proyecto.getNombre());
+				context.startActivity(intentEditarProyecto);
 			}
 		});
 
+		buttonProyectoEditar.setTag(this.getItem(position).getId());
 		buttonProyectoEliminar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
+				proyectoApiRest.borrarProyecto((Integer) v.getTag());
 			}
 		});
 
 		buttonProyectoVerTareas.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
+				//TODO
 			}
 		});
 

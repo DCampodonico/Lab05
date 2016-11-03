@@ -24,19 +24,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import dam.isi.frsf.utn.edu.ar.lab05.dao.BusquedaFinalizadaListener;
+import dam.isi.frsf.utn.edu.ar.lab05.dao.BusquedaProyectosListener;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ListarProyectosTask;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 
-public class ProyectosActivity extends AppCompatActivity implements BusquedaFinalizadaListener<Proyecto>{
+public class ProyectosActivity extends AppCompatActivity implements BusquedaProyectosListener<Proyecto> {
 
 	private ListView listViewProyectos;
+	private TextView textViewProyectos;
 	private ProyectoApiRest proyectoApiRest;
 	private ProyectoAdapter proyectoAdapter;
 	private List<Proyecto> proyectos;
@@ -48,10 +51,11 @@ public class ProyectosActivity extends AppCompatActivity implements BusquedaFina
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		textViewProyectos = (TextView) findViewById(R.id.textViewProyectos);
 		listViewProyectos = (ListView) findViewById(R.id.listViewProyectos);
 		proyectos = new ArrayList<>();
 		proyectoApiRest = new ProyectoApiRest();
-		proyectoAdapter = new ProyectoAdapter(this, proyectos);
+		proyectoAdapter = new ProyectoAdapter(this, proyectos, proyectoApiRest);
 		listViewProyectos.setAdapter(proyectoAdapter);
 		new ListarProyectosTask(this).execute();
 	}
@@ -84,7 +88,13 @@ public class ProyectosActivity extends AppCompatActivity implements BusquedaFina
 	}
 
 	@Override
+	public void busquedaIniciada(){
+		textViewProyectos.setText(R.string.text_view_proyectos_buscando);
+		textViewProyectos.setVisibility(View.VISIBLE);
+	}
+	@Override
 	public void busquedaFinalizada(List<Proyecto> proyectos) {
+		textViewProyectos.setVisibility(View.GONE);
 		this.proyectos.clear();
 		this.proyectos.addAll(proyectos);
 		proyectoAdapter.notifyDataSetChanged();

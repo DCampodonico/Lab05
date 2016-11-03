@@ -31,7 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import dam.isi.frsf.utn.edu.ar.lab05.dao.PostUsuario;
+import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
@@ -41,6 +41,9 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
     EditText mEmailAddress;
     EditText mPhoneNumber;
 	Button buttonAltaUsuarioGuardar, buttonAltaUsuarioCancelar;
+	ProyectoDAO proyectoDAO = new ProyectoDAO(this);
+	ProyectoApiRest proyectoApiRest = new ProyectoApiRest();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,12 +63,12 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void agregarUsuarioADBLocal(Usuario usuario) {
-        ProyectoDAO myDao = new ProyectoDAO(this);
-        myDao.nuevoUsuario(usuario);
+	    proyectoDAO = new ProyectoDAO(this);
+	    proyectoDAO.nuevoUsuario(usuario);
     }
 
     private void pushUsuario(Usuario usuario) {
-	    new PostUsuario().execute(usuario);
+	    proyectoApiRest.crearUsuario(usuario);
     }
 
     private void agregarUsuarioAContactos(Usuario usuario){
