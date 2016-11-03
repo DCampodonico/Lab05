@@ -3,6 +3,10 @@
     {
       "id": 1,
       "nombre": "Proyecto 1"
+    },
+    {
+      "id": 2,
+      "nombre": "Proyecto 2"
     }
   ],
   "prioridades": [
@@ -21,6 +25,11 @@
       "nombre": "Juan",
       "correoElectronico": "a@a.com",
       "id": 2
+    },
+    {
+      "id": 16,
+      "nombre": "Pedro",
+      "correoElectronico": "a@a.com"
     }
   ],
   "tareas": [

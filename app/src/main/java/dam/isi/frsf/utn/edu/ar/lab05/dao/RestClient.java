@@ -38,8 +38,8 @@ import java.net.URL;
  */
 public class RestClient {
 
-	private final String IP_SERVER = "10.0.2.2";
-	private final String PORT_SERVER = "4000";
+	public static String IP_SERVER = "192.168.1.106";
+	public static String PORT_SERVER = "4000";
 	private final String TAG_LOG = "LAB06";
 	public JSONObject getById(Integer id,String path) {
 		JSONObject resultado = null;
@@ -124,7 +124,8 @@ public class RestClient {
 					httpCon.setDoOutput(true);
 					httpCon.setRequestProperty("Content-Type", "application/json");
 					httpCon.setRequestMethod("DELETE");
-					httpCon.connect();
+					//httpCon.connect();
+					httpCon.getResponseMessage();
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

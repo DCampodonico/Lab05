@@ -90,6 +90,7 @@ public class AltaProyectoActivity extends AppCompatActivity implements View.OnCl
 					proyectoApiRest.actualizarProyecto(proyecto);
 					Toast.makeText(this, R.string.exito_modificar_proyecto, Toast.LENGTH_LONG).show();
 				}
+				finish();
 			}
 			else{
 				Toast.makeText(this, errores, Toast.LENGTH_LONG).show();

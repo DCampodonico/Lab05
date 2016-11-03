@@ -36,8 +36,8 @@ import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 
-import static dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest.IP_SERVER;
-import static dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest.PORT_SERVER;
+import static dam.isi.frsf.utn.edu.ar.lab05.dao.RestClient.IP_SERVER;
+import static dam.isi.frsf.utn.edu.ar.lab05.dao.RestClient.PORT_SERVER;
 
 public class ListarProyectosTask extends AsyncTask<String, Void, List<Proyecto>> {
 		private BusquedaProyectosListener<Proyecto> listener;

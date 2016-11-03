@@ -28,11 +28,17 @@ import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
  * Created by martdominguez on 20/10/2016.
  */
 public class ProyectoApiRest {
-
-	public static String IP_SERVER = "192.168.1.106";
-	public static String PORT_SERVER = "4000";
 	private RestClient restClient = new RestClient();
-	public void crearProyecto(Proyecto p){
+
+	public void crearProyecto(Proyecto proyecto){
+		JSONObject nuevoProyecto = new JSONObject();
+		try {
+			nuevoProyecto.put("id", proyecto.getId());
+			nuevoProyecto.put("nombre", proyecto.getNombre());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		restClient.crear(nuevoProyecto, "proyectos");
 	}
 
 	public void crearUsuario(Usuario usuario){

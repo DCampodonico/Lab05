@@ -64,7 +64,7 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
 
     private void agregarUsuarioADBLocal(Usuario usuario) {
 	    proyectoDAO = new ProyectoDAO(this);
-	    proyectoDAO.nuevoUsuario(usuario);
+	    usuario.setId(proyectoDAO.nuevoUsuario(usuario));
     }
 
     private void pushUsuario(Usuario usuario) {
