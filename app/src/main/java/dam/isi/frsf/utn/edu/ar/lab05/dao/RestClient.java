@@ -41,6 +41,7 @@ public class RestClient {
 	public static String IP_SERVER = "192.168.1.106";
 	public static String PORT_SERVER = "4000";
 	private final String TAG_LOG = "LAB06";
+
 	public JSONObject getById(Integer id,String path) {
 		JSONObject resultado = null;
 		HttpURLConnection urlConnection=null;
@@ -76,6 +77,7 @@ public class RestClient {
 		JSONArray resultado = null;
 		return resultado;
 	}
+
 	public void crear(JSONObject objeto, String path) {
 		final String path1 = path;
 		final JSONObject objeto1 = objeto;
@@ -109,7 +111,38 @@ public class RestClient {
 		new Thread(r).start();
 	}
 
-	public void actualizar(JSONObject objeto, String path) {
+	public void actualizar(JSONObject objeto, String path, Integer id) {
+		final String path1 = path;
+		final JSONObject objeto1 = objeto;
+		final Integer id1 = id;
+		final Runnable r = new Runnable() {
+			public void run() {
+				HttpURLConnection urlConnection=null;
+				try {
+					byte[] data = objeto1.toString().getBytes("UTF-8");
+
+					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path1 + "/" + id1);
+
+					urlConnection = (HttpURLConnection) url.openConnection();
+					urlConnection.setDoOutput(true);
+					urlConnection.setRequestMethod("PUT");
+					urlConnection.setFixedLengthStreamingMode(data.length);
+					urlConnection.setRequestProperty("Content-Type", "application/json");
+					DataOutputStream printout = new DataOutputStream(urlConnection.getOutputStream());
+
+					printout.write(data);
+					printout.flush();
+					printout.close();
+				}catch (MalformedURLException e) {
+					e.printStackTrace();
+				}catch (IOException e1) {
+					e1.printStackTrace();
+				}finally {
+					urlConnection.disconnect();
+				}
+			}
+		};
+		new Thread(r).start();
 	}
 
 	public void borrar(Integer id, String path) {
@@ -124,7 +157,7 @@ public class RestClient {
 					httpCon.setDoOutput(true);
 					httpCon.setRequestProperty("Content-Type", "application/json");
 					httpCon.setRequestMethod("DELETE");
-					//httpCon.connect();
+
 					httpCon.getResponseMessage();
 				} catch (MalformedURLException e) {
 					e.printStackTrace();

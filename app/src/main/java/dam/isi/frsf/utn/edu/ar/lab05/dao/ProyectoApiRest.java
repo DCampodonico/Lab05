@@ -18,6 +18,8 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05.dao;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,8 +58,15 @@ public class ProyectoApiRest {
 	public void borrarProyecto(Integer id){
 		restClient.borrar(id, "proyectos");
 	}
-	public void actualizarProyecto(Proyecto p){
-
+	public void actualizarProyecto(Proyecto proyecto){
+		JSONObject nuevoProyecto = new JSONObject();
+		try {
+			nuevoProyecto.put("id", proyecto.getId());
+			nuevoProyecto.put("nombre", proyecto.getNombre());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		restClient.actualizar(nuevoProyecto, "proyectos", proyecto.getId());
 	}
 
 	public Proyecto buscarProyecto(Integer id){
