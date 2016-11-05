@@ -78,16 +78,14 @@ public class RestClient {
 		return resultado;
 	}
 
-	public void crear(JSONObject objeto, String path) {
-		final String path1 = path;
-		final JSONObject objeto1 = objeto;
+	public void crear(final JSONObject objeto, final String path) {
 		final Runnable r = new Runnable() {
 			public void run() {
 				HttpURLConnection urlConnection=null;
 				try {
-					byte[] data = objeto1.toString().getBytes("UTF-8");
+					byte[] data = objeto.toString().getBytes("UTF-8");
 
-					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path1 + "/");
+					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path + "/");
 
 					urlConnection = (HttpURLConnection) url.openConnection();
 					urlConnection.setDoOutput(true);
@@ -111,17 +109,14 @@ public class RestClient {
 		new Thread(r).start();
 	}
 
-	public void actualizar(JSONObject objeto, String path, Integer id) {
-		final String path1 = path;
-		final JSONObject objeto1 = objeto;
-		final Integer id1 = id;
+	public void actualizar(final JSONObject objeto, final String path, final Integer id) {
 		final Runnable r = new Runnable() {
 			public void run() {
 				HttpURLConnection urlConnection=null;
 				try {
-					byte[] data = objeto1.toString().getBytes("UTF-8");
+					byte[] data = objeto.toString().getBytes("UTF-8");
 
-					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path1 + "/" + id1);
+					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path + "/" + id);
 
 					urlConnection = (HttpURLConnection) url.openConnection();
 					urlConnection.setDoOutput(true);
@@ -145,14 +140,12 @@ public class RestClient {
 		new Thread(r).start();
 	}
 
-	public void borrar(Integer id, String path) {
-		final String path1 = path;
-		final Integer id1 = id;
+	public void borrar(final Integer id, final String path) {
 		final Runnable r = new Runnable() {
 			public void run() {
 				HttpURLConnection httpCon = null;
 				try {
-					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path1 + "/" + id1);
+					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path + "/" + id);
 					httpCon = (HttpURLConnection) url.openConnection();
 					httpCon.setDoOutput(true);
 					httpCon.setRequestProperty("Content-Type", "application/json");

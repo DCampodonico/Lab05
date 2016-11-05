@@ -20,7 +20,6 @@ package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,10 +76,11 @@ public class ProyectoAdapter extends ArrayAdapter<Proyecto>{
 			}
 		});
 
+		buttonProyectoVerTareas.setTag(this.getItem(position).getId());
 		buttonProyectoVerTareas.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//TODO
+				proyectoApiRest.verTareas((Integer) v.getTag());
 			}
 		});
 
