@@ -18,11 +18,19 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,20 +39,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Arrays;
+
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 public class AltaUsuarioActivity extends AppCompatActivity implements View.OnClickListener {
 
-    EditText mName;
-    EditText mEmailAddress;
-    EditText mPhoneNumber;
-	Button buttonAltaUsuarioGuardar, buttonAltaUsuarioCancelar;
-	ProyectoDAO proyectoDAO = new ProyectoDAO(this);
-	ProyectoApiRest proyectoApiRest = new ProyectoApiRest();
+	private EditText mName;
+	private EditText mEmailAddress;
+	private EditText mPhoneNumber;
+	private Button buttonAltaUsuarioGuardar, buttonAltaUsuarioCancelar;
+	private ProyectoDAO proyectoDAO = new ProyectoDAO(this);
+	private ProyectoApiRest proyectoApiRest = new ProyectoApiRest();
+	private Usuario usuario;
 
-    @Override
+	private boolean flagPermisoPedido;
+	private static final int PERMISSION_REQUEST_CONTACT =999;
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_usuario);
@@ -71,8 +85,61 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
 	    proyectoApiRest.crearUsuario(usuario);
     }
 
-    private void agregarUsuarioAContactos(Usuario usuario){
-	    //TODO pedir permisos
+	public void askForContactPermission(final Usuario usuario){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (ContextCompat.checkSelfPermission(AltaUsuarioActivity.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+				if (ActivityCompat.shouldShowRequestPermissionRationale(AltaUsuarioActivity.this,
+						Manifest.permission.CALL_PHONE)) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(AltaUsuarioActivity.this);
+					builder.setTitle("Permisos Peligrosos!!!");
+					builder.setPositiveButton(android.R.string.ok, null);
+					builder.setMessage("Puedo acceder a un permiso peligroso???");
+					builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+						@TargetApi(Build.VERSION_CODES.M)
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							flagPermisoPedido=true;
+							AltaUsuarioActivity.this.usuario = usuario;
+							requestPermissions(
+									new String[]
+											{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS,Manifest.permission.GET_ACCOUNTS}
+									, PERMISSION_REQUEST_CONTACT);
+						}
+					});
+					builder.show();
+				} else {
+					flagPermisoPedido=true;
+					ActivityCompat.requestPermissions(AltaUsuarioActivity.this,
+							new String[]
+									{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS,Manifest.permission.GET_ACCOUNTS}
+							, PERMISSION_REQUEST_CONTACT);
+				}
+
+			}
+		}
+		if(!flagPermisoPedido) agregarUsuarioAContactos(usuario);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+	                                       String permissions[], int[] grantResults) {
+		Log.d("ESCRIBIR_JSON","req code"+requestCode+ " "+ Arrays.toString(permissions)+" ** "+Arrays.toString(grantResults));
+		switch (requestCode) {
+			case AltaUsuarioActivity.PERMISSION_REQUEST_CONTACT: {
+				if (grantResults.length > 0
+						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					agregarUsuarioAContactos(usuario);
+				} else {
+					finish();
+					Toast.makeText(AltaUsuarioActivity.this, "No permission for contacts", Toast.LENGTH_SHORT).show();
+				}
+				return;
+			}
+		}
+		usuario = null;
+	}
+
+	private void agregarUsuarioAContactos(Usuario usuario){
         String accountType =null;
         String accountName =null;
         ContentValues values = new ContentValues();
@@ -112,7 +179,7 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
 			String errores = validar();
 			if(errores.equals("")){
 				Usuario usuario = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim(), mPhoneNumber.getText().toString().trim());
-				this.agregarUsuarioAContactos(usuario);
+				askForContactPermission(usuario);
 				this.agregarUsuarioADBLocal(usuario);
 				this.pushUsuario(usuario);
 				Toast.makeText(this, R.string.Alta_usuario_exito, Toast.LENGTH_LONG).show();
