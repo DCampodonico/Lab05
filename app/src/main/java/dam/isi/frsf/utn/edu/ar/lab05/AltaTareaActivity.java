@@ -42,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
@@ -49,36 +50,31 @@ import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 public class AltaTareaActivity extends AppCompatActivity implements View.OnClickListener {
-    EditText editTextDescripcion, editTextHorasEstimadas;
-    Spinner spinnerResponsable;
-    SeekBar seekBarPrioridad;
-    Button btnGuardar, btnCancelar;
-    ProyectoDAO proyectoDAO;
-    Integer idTarea;
-    ArrayList<String> contactos;
+    private EditText editTextDescripcion, editTextHorasEstimadas;
+    private Spinner spinnerResponsable;
+    private SeekBar seekBarPrioridad;
+    private Button btnGuardar, btnCancelar;
+    private ProyectoDAO proyectoDAO;
+    private Integer idTarea;
+    private Toolbar toolbar;
+    private ArrayList<String> contactos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_tarea);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setParametros();
+
         setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        editTextDescripcion = (EditText) findViewById(R.id.editTextDescripcion);
-        editTextHorasEstimadas = (EditText) findViewById(R.id.editTextHorasEstimadas);
-
-        spinnerResponsable = (Spinner) findViewById(R.id.spinnerReponsable);
+        if(getSupportActionBar()!=null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         buscarContactos();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, contactos);
         spinnerResponsable.setAdapter(adapter);
 
-        seekBarPrioridad = (SeekBar) findViewById(R.id.seekBarPrioridad);
-        btnGuardar = (Button) findViewById(R.id.btnGuardar);
-        btnCancelar = (Button) findViewById(R.id.btnCanelar);
         proyectoDAO = new ProyectoDAO(this);
 
         btnGuardar.setOnClickListener(this);
@@ -95,10 +91,21 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    private void setParametros(){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        editTextDescripcion = (EditText) findViewById(R.id.editTextDescripcion);
+        editTextHorasEstimadas = (EditText) findViewById(R.id.editTextHorasEstimadas);
+        spinnerResponsable = (Spinner) findViewById(R.id.spinnerReponsable);
+        seekBarPrioridad = (SeekBar) findViewById(R.id.seekBarPrioridad);
+        btnGuardar = (Button) findViewById(R.id.btnGuardar);
+        btnCancelar = (Button) findViewById(R.id.btnCanelar);
+    }
+
     private void cargarDatos(Integer idTarea) {
         Tarea t = proyectoDAO.obtenerTarea(idTarea);
         editTextDescripcion.setText(t.getDescripcion());
-        editTextHorasEstimadas.setText(t.getHorasEstimadas().toString());
+        String horasEstimadas = t.getHorasEstimadas().toString();
+        editTextHorasEstimadas.setText(horasEstimadas);
         seekBarPrioridad.setProgress(t.getPrioridad().getId());
     }
 
