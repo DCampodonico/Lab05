@@ -18,26 +18,47 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import java.util.Arrays;
+
+import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
-public class AltaUsuarioActivity extends AppCompatActivity {
+public class AltaUsuarioActivity extends AppCompatActivity implements View.OnClickListener {
 
-    EditText mName;
-    EditText mEmailAddress;
-    EditText mPhoneNumber;
+	private EditText mName;
+	private EditText mEmailAddress;
+	private EditText mPhoneNumber;
+	private Button buttonAltaUsuarioGuardar, buttonAltaUsuarioCancelar;
+	private ProyectoDAO proyectoDAO = new ProyectoDAO(this);
+	private ProyectoApiRest proyectoApiRest = new ProyectoApiRest();
+	private Usuario usuario;
 
-    @Override
+	private boolean flagPermisoPedido;
+	private static final int PERMISSION_REQUEST_CONTACT =999;
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_usuario);
@@ -49,19 +70,76 @@ public class AltaUsuarioActivity extends AppCompatActivity {
         mName = (EditText) findViewById(R.id.editName);
         mEmailAddress = (EditText) findViewById(R.id.editEmail);
         mPhoneNumber = (EditText) findViewById(R.id.editPhone);
+	    buttonAltaUsuarioGuardar = (Button) findViewById(R.id.buttonAltaUsuarioGuardar);
+	    buttonAltaUsuarioCancelar = (Button) findViewById(R.id.buttonAltaUsuarioCancelar);
+	    buttonAltaUsuarioGuardar.setOnClickListener(this);
+	    buttonAltaUsuarioCancelar.setOnClickListener(this);
     }
 
-    private void agregarUsuarioADBLocal() {
-        ProyectoDAO myDao = new ProyectoDAO(this);
-        Usuario u = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim());
-        myDao.nuevoUsuario(u);
+    private void agregarUsuarioADBLocal(Usuario usuario) {
+	    proyectoDAO = new ProyectoDAO(this);
+	    usuario.setId(proyectoDAO.nuevoUsuario(usuario));
     }
 
-    private void pushUsuario() {
-
+    private void pushUsuario(Usuario usuario) {
+	    proyectoApiRest.crearUsuario(usuario);
     }
 
-    private void agregarUsuarioAContactos(){
+	public void askForContactPermission(final Usuario usuario){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (ContextCompat.checkSelfPermission(AltaUsuarioActivity.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+				if (ActivityCompat.shouldShowRequestPermissionRationale(AltaUsuarioActivity.this,
+						Manifest.permission.CALL_PHONE)) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(AltaUsuarioActivity.this);
+					builder.setTitle("Permisos Peligrosos!!!");
+					builder.setPositiveButton(android.R.string.ok, null);
+					builder.setMessage("Puedo acceder a un permiso peligroso???");
+					builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+						@TargetApi(Build.VERSION_CODES.M)
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							flagPermisoPedido=true;
+							AltaUsuarioActivity.this.usuario = usuario;
+							requestPermissions(
+									new String[]
+											{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS,Manifest.permission.GET_ACCOUNTS}
+									, PERMISSION_REQUEST_CONTACT);
+						}
+					});
+					builder.show();
+				} else {
+					flagPermisoPedido=true;
+					ActivityCompat.requestPermissions(AltaUsuarioActivity.this,
+							new String[]
+									{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS,Manifest.permission.GET_ACCOUNTS}
+							, PERMISSION_REQUEST_CONTACT);
+				}
+
+			}
+		}
+		if(!flagPermisoPedido) agregarUsuarioAContactos(usuario);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+	                                       String permissions[], int[] grantResults) {
+		Log.d("ESCRIBIR_JSON","req code"+requestCode+ " "+ Arrays.toString(permissions)+" ** "+Arrays.toString(grantResults));
+		switch (requestCode) {
+			case AltaUsuarioActivity.PERMISSION_REQUEST_CONTACT: {
+				if (grantResults.length > 0
+						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					agregarUsuarioAContactos(usuario);
+				} else {
+					finish();
+					Toast.makeText(AltaUsuarioActivity.this, "No permission for contacts", Toast.LENGTH_SHORT).show();
+				}
+				return;
+			}
+		}
+		usuario = null;
+	}
+
+	private void agregarUsuarioAContactos(Usuario usuario){
         String accountType =null;
         String accountName =null;
         ContentValues values = new ContentValues();
@@ -73,22 +151,49 @@ public class AltaUsuarioActivity extends AppCompatActivity {
         values.clear();
         values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, mName.getText().toString().trim());
+        values.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, usuario.getNombre());
         getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
 
         values.clear();
         values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.Email.DATA, mEmailAddress.getText().toString().trim());
+        values.put(ContactsContract.CommonDataKinds.Email.DATA, usuario.getCorreoElectronico());
         getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
 
         values.clear();
         values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
         values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.Phone.DATA, mPhoneNumber.getText().toString().trim());
+        values.put(ContactsContract.CommonDataKinds.Phone.DATA, usuario.getTelefono());
         getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
 
         Log.d("INFO", "Se creo un nuevo contacto");
     }
+
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		if(id == buttonAltaUsuarioCancelar.getId()){
+			finish();
+		}
+		else if(id == buttonAltaUsuarioGuardar.getId()){
+			String errores = validar();
+			if(errores.equals("")){
+				Usuario usuario = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim(), mPhoneNumber.getText().toString().trim());
+				askForContactPermission(usuario);
+				this.agregarUsuarioADBLocal(usuario);
+				this.pushUsuario(usuario);
+				Toast.makeText(this, R.string.Alta_usuario_exito, Toast.LENGTH_LONG).show();
+				finish();
+			}
+			else{
+				Toast.makeText(this, errores, Toast.LENGTH_LONG).show();
+			}
+		}
+		}
+
+	private String validar() {
+		//TODO validar alta usuario
+		return "";
+	}
 }
 

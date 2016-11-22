@@ -114,7 +114,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_buscar_tarea_desvio:
                 intent = new Intent(this, BuscarTareaDesvio.class);
                 startActivity(intent);
-                return true;
+				break;
+
+	        case R.id.action_proyectos:
+                intent = new Intent(this, ProyectosActivity.class);
+                startActivity(intent);
+                break;
         }
 
         return super.onOptionsItemSelected(item);

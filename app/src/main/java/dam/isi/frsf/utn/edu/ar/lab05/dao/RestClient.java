@@ -25,10 +25,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -36,49 +38,129 @@ import java.net.URL;
  */
 public class RestClient {
 
-    private final String IP_SERVER = "10.0.2.2";
-    private final String PORT_SERVER = "4000";
-    private final String TAG_LOG = "LAB06";
-    public JSONObject getById(Integer id,String path) {
-        JSONObject resultado = null;
-        HttpURLConnection urlConnection=null;
-        try {
-            URL url = new URL("http://"+IP_SERVER+":"+PORT_SERVER+"/"+path+"/"+id);
-            Log.d("TAG_LOG",url.getPath()+ " --> "+url.toString());
-            urlConnection= (HttpURLConnection) url.openConnection();
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            InputStreamReader isw = new InputStreamReader(in);
-            StringBuilder sb = new StringBuilder();
+	public static String IP_SERVER = "192.168.1.106";
+	public static String PORT_SERVER = "4000";
+	private final String TAG_LOG = "LAB06";
 
-            int data = isw.read();
-            while (data != -1) {
-                char current = (char) data;
-                sb.append(current);
-                data = isw.read();
-            }
-            Log.d("TAG_LOG",url.getPath()+ " --> "+sb.toString());
-            resultado = new JSONObject(sb.toString());
-        }
-        catch (IOException e) {
-            Log.e("TEST-ARR",e.getMessage(),e);
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } finally {
-            if(urlConnection!=null) urlConnection.disconnect();
-        }
-        return resultado;
-    }
+	public JSONObject getById(Integer id,String path) {
+		JSONObject resultado = null;
+		HttpURLConnection urlConnection=null;
+		try {
+			URL url = new URL("http://"+IP_SERVER+":"+PORT_SERVER+"/"+path+"/"+id);
+			Log.d("TAG_LOG",url.getPath()+ " --> "+url.toString());
+			urlConnection= (HttpURLConnection) url.openConnection();
+			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+			InputStreamReader isw = new InputStreamReader(in);
+			StringBuilder sb = new StringBuilder();
 
-    public JSONArray getByAll(Integer id,String path) {
-        JSONArray resultado = null;
-        return resultado;
-    }
-    public void crear(JSONObject objeto,String path) {
-    }
-    public void actualizar(JSONObject objeto,String path) {
-    }
+			int data = isw.read();
+			while (data != -1) {
+				char current = (char) data;
+				sb.append(current);
+				data = isw.read();
+			}
+			Log.d("TAG_LOG",url.getPath()+ " --> "+sb.toString());
+			resultado = new JSONObject(sb.toString());
+		}
+		catch (IOException e) {
+			Log.e("TEST-ARR",e.getMessage(),e);
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} finally {
+			if(urlConnection!=null) urlConnection.disconnect();
+		}
+		return resultado;
+	}
 
-    public void borrar(Integer id,String path) {
-    }
+	public JSONArray getByAll(Integer id, String path) {
+		JSONArray resultado = null;
+		return resultado;
+	}
+
+	public void crear(final JSONObject objeto, final String path) {
+		final Runnable r = new Runnable() {
+			public void run() {
+				HttpURLConnection urlConnection=null;
+				try {
+					byte[] data = objeto.toString().getBytes("UTF-8");
+
+					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path + "/");
+
+					urlConnection = (HttpURLConnection) url.openConnection();
+					urlConnection.setDoOutput(true);
+					urlConnection.setRequestMethod("POST");
+					urlConnection.setFixedLengthStreamingMode(data.length);
+					urlConnection.setRequestProperty("Content-Type", "application/json");
+					DataOutputStream printout = new DataOutputStream(urlConnection.getOutputStream());
+
+					printout.write(data);
+					printout.flush();
+					printout.close();
+				}catch (MalformedURLException e) {
+					e.printStackTrace();
+				}catch (IOException e1) {
+					e1.printStackTrace();
+				}finally {
+					urlConnection.disconnect();
+				}
+			}
+		};
+		new Thread(r).start();
+	}
+
+	public void actualizar(final JSONObject objeto, final String path, final Integer id) {
+		final Runnable r = new Runnable() {
+			public void run() {
+				HttpURLConnection urlConnection=null;
+				try {
+					byte[] data = objeto.toString().getBytes("UTF-8");
+
+					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path + "/" + id);
+
+					urlConnection = (HttpURLConnection) url.openConnection();
+					urlConnection.setDoOutput(true);
+					urlConnection.setRequestMethod("PUT");
+					urlConnection.setFixedLengthStreamingMode(data.length);
+					urlConnection.setRequestProperty("Content-Type", "application/json");
+					DataOutputStream printout = new DataOutputStream(urlConnection.getOutputStream());
+
+					printout.write(data);
+					printout.flush();
+					printout.close();
+				}catch (MalformedURLException e) {
+					e.printStackTrace();
+				}catch (IOException e1) {
+					e1.printStackTrace();
+				}finally {
+					urlConnection.disconnect();
+				}
+			}
+		};
+		new Thread(r).start();
+	}
+
+	public void borrar(final Integer id, final String path) {
+		final Runnable r = new Runnable() {
+			public void run() {
+				HttpURLConnection httpCon = null;
+				try {
+					URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path + "/" + id);
+					httpCon = (HttpURLConnection) url.openConnection();
+					httpCon.setDoOutput(true);
+					httpCon.setRequestProperty("Content-Type", "application/json");
+					httpCon.setRequestMethod("DELETE");
+
+					httpCon.getResponseMessage();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (httpCon != null) httpCon.disconnect();
+				}
+			}
+		};
+		new Thread(r).start();
+	}
 }

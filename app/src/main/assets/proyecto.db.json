@@ -1,0 +1,47 @@
+{
+  "proyectos": [
+    {
+      "id": 1,
+      "nombre": "Proyecto 1"
+    },
+    {
+      "id": 2,
+      "nombre": "Proyecto 2 ABC"
+    }
+  ],
+  "prioridades": [
+    {
+      "id": 1,
+      "prioridad": "alta"
+    }
+  ],
+  "usuarios": [
+    {
+      "id": 1,
+      "nombre": "martin",
+      "correoElectronico": "mart@mail.com"
+    },
+    {
+      "nombre": "Juan",
+      "correoElectronico": "a@a.com",
+      "id": 2
+    },
+    {
+      "id": 16,
+      "nombre": "Pedro",
+      "correoElectronico": "a@a.com"
+    }
+  ],
+  "tareas": [
+    {
+      "id": 1,
+      "descripcion": "test1",
+      "horasEstimadas": 5,
+      "minutosTrabajados": 150,
+      "finalizada": 0,
+      "proyectoId": 1,
+      "prioridadId": 1,
+      "usuarioId": 1
+    }
+  ]
+}

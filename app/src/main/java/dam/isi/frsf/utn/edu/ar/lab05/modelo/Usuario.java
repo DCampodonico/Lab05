@@ -26,15 +26,16 @@ public class Usuario {
     private Integer id;
     private String nombre;
     private String correoElectronico;
-
+    private String telefono;
     public Usuario(){
 
     }
 
-    public Usuario(Integer id, String nombre, String correoElectronico) {
+	public Usuario(Integer id, String nombre, String correoElectronico, String telefono) {
         this.id = id;
         this.nombre = nombre;
-        this.correoElectronico = correoElectronico;
+		this.correoElectronico = correoElectronico;
+		this.telefono = telefono;
     }
 
     public Integer getId() {
@@ -60,4 +61,17 @@ public class Usuario {
     public void setCorreoElectronico(String correoElectronico) {
         this.correoElectronico = correoElectronico;
     }
+
+	public String getTelefono() {
+		return telefono;
+	}
+
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+	@Override
+	public String toString() {
+		return nombre;
+	}
 }

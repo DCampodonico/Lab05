@@ -19,11 +19,19 @@
 
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -35,206 +43,282 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
+import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 public class AltaTareaActivity extends AppCompatActivity implements View.OnClickListener {
-    private EditText editTextDescripcion, editTextHorasEstimadas;
-    private Spinner spinnerResponsable;
-    private SeekBar seekBarPrioridad;
-    private Button btnGuardar, btnCancelar;
-    private ProyectoDAO proyectoDAO;
-    private Integer idTarea;
-    private Toolbar toolbar;
-    private ArrayList<String> contactos;
+	private EditText editTextDescripcion, editTextHorasEstimadas;
+	private Spinner spinnerResponsable;
+	private SeekBar seekBarPrioridad;
+	private TextView textViewPrioridad;
+	private Button btnGuardar, btnCancelar;
+	private ProyectoDAO proyectoDAO;
+	private Integer idTarea;
+	private ArrayList<Usuario> contactos;
+	private ArrayList<Prioridad> prioridades;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_alta_tarea);
-        setParametros();
+	private boolean flagPermisoPedido;
+	private static final int PERMISSION_REQUEST_CONTACT =999;
 
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar()!=null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_alta_tarea);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
-        buscarContactos();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, contactos);
-        spinnerResponsable.setAdapter(adapter);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        proyectoDAO = new ProyectoDAO(this);
+		editTextDescripcion = (EditText) findViewById(R.id.editTextDescripcion);
+		editTextHorasEstimadas = (EditText) findViewById(R.id.editTextHorasEstimadas);
 
-        btnGuardar.setOnClickListener(this);
-        btnCancelar.setOnClickListener(this);
+		spinnerResponsable = (Spinner) findViewById(R.id.spinnerReponsable);
+		askForContactPermission();
 
-        Intent intent = getIntent();
-        idTarea = intent.getIntExtra("ID_TAREA", 0);
-        if(idTarea != 0){
-            setTitle(R.string.title_activity_editar_tarea);
-            cargarDatos(idTarea);
-        }
-        else{
-            setTitle(R.string.title_activity_alta_tarea);
-        }
-    }
+		proyectoDAO = new ProyectoDAO(this);
 
-    private void setParametros(){
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        editTextDescripcion = (EditText) findViewById(R.id.editTextDescripcion);
-        editTextHorasEstimadas = (EditText) findViewById(R.id.editTextHorasEstimadas);
-        spinnerResponsable = (Spinner) findViewById(R.id.spinnerReponsable);
-        seekBarPrioridad = (SeekBar) findViewById(R.id.seekBarPrioridad);
-        btnGuardar = (Button) findViewById(R.id.btnGuardar);
-        btnCancelar = (Button) findViewById(R.id.btnCanelar);
-    }
+		seekBarPrioridad = (SeekBar) findViewById(R.id.seekBarPrioridad);
+		prioridades = new ArrayList<>();
+		prioridades.addAll(proyectoDAO.listarPrioridades());
+		Collections.sort(prioridades, new Comparator<Prioridad>() {
+			@Override
+			public int compare(Prioridad prioridad1, Prioridad prioridad2)
+			{
+				return  prioridad1.getId().compareTo(prioridad2.getId());
+			}
+		});
+		textViewPrioridad = (TextView) findViewById(R.id.textViewPrioridad);
+		seekBarPrioridad.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				textViewPrioridad.setText(prioridades.get(progress).getPrioridad());
+			}
 
-    private void cargarDatos(Integer idTarea) {
-        Tarea t = proyectoDAO.obtenerTarea(idTarea);
-        editTextDescripcion.setText(t.getDescripcion());
-        String horasEstimadas = t.getHorasEstimadas().toString();
-        editTextHorasEstimadas.setText(horasEstimadas);
-        seekBarPrioridad.setProgress(t.getPrioridad().getId());
-    }
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
 
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        if(id == btnCancelar.getId()){
-            finish();
-        }
-        else if(id == btnGuardar.getId()){
-            String errores = validar();
-            if(errores.equals("")){
-                Tarea t = new Tarea();
-                t.setDescripcion(editTextDescripcion.getText().toString().trim());
-                t.setFinalizada(false);
-                t.setHorasEstimadas(Integer.parseInt(editTextHorasEstimadas.getText().toString().trim()));
-                t.setMinutosTrabajados(0);
-                t.setPrioridad(proyectoDAO.obtenerPrioridad(seekBarPrioridad.getProgress()));
-                //TODO t.setProyecto();
-                t.setProyecto(new Proyecto(1, ""));
-                //TODO t.setResponsable();
-                t.setResponsable(new Usuario(1, "", ""));
-                proyectoDAO.nuevaTarea(t);
-                if(idTarea == 0){
-                    Toast.makeText(this, R.string.exito_nueva_tarea, Toast.LENGTH_LONG).show();
-                }
-                else{
-                    Toast.makeText(this, R.string.exito_modificar_tarea, Toast.LENGTH_LONG).show();
-                }
-                finish();
-            }
-            else{
-                Toast.makeText(this, errores, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
+			}
 
-    private String validar() {
-        String res = "";
-        if(editTextDescripcion.getText().toString().trim().equals("")){
-            res += getString(R.string.error_descripcion);
-        }
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
 
-        try{
-            Integer.parseInt(editTextHorasEstimadas.getText().toString().trim());
-        }
-        catch (Exception e){
-            res += (res.isEmpty()? "" : "\n") + getString(R.string.error_horas_estimadas);
-        }
+			}
+		});
+		seekBarPrioridad.setProgress(3);
+		seekBarPrioridad.setProgress(0);
+		btnGuardar = (Button) findViewById(R.id.btnGuardar);
+		btnCancelar = (Button) findViewById(R.id.btnCanelar);
 
-        if(seekBarPrioridad.getProgress()<1 || seekBarPrioridad.getProgress()>4){
-            res += (res.isEmpty()? "" : "\n") + getString(R.string.error_prioridad);
-        }
+		btnGuardar.setOnClickListener(this);
+		btnCancelar.setOnClickListener(this);
 
-        //TODO validar spinner
+		Intent intent = getIntent();
+		idTarea = intent.getIntExtra("ID_TAREA", 0);
+		if(idTarea != 0){
+			setTitle(R.string.title_activity_editar_tarea);
+			cargarDatos(idTarea);
+		}
+		else{
+			setTitle(R.string.title_activity_alta_tarea);
+		}
+	}
 
-        return res;
-    }
+	private void cargarDatos(Integer idTarea) {
+		Tarea t = proyectoDAO.obtenerTarea(idTarea);
+		editTextDescripcion.setText(t.getDescripcion());
+		editTextHorasEstimadas.setText(t.getHorasEstimadas().toString());
+		seekBarPrioridad.setProgress(t.getPrioridad().getId());
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_alta_tarea, menu);
-        return true;
-    }
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		if(id == btnCancelar.getId()){
+			finish();
+		}
+		else if(id == btnGuardar.getId()){
+			String errores = validar();
+			if(errores.equals("")){
+				Tarea t = new Tarea();
+				t.setDescripcion(editTextDescripcion.getText().toString().trim());
+				t.setFinalizada(false);
+				t.setHorasEstimadas(Integer.parseInt(editTextHorasEstimadas.getText().toString().trim()));
+				t.setMinutosTrabajados(0);
+				t.setPrioridad(prioridades.get(seekBarPrioridad.getProgress()));
+				//TODO t.setProyecto();
+				t.setProyecto(new Proyecto(1, ""));
+				t.setResponsable(((Usuario) spinnerResponsable.getSelectedItem()));
+				if(idTarea != 0) {
+					t.setId(idTarea);
+				}
+				proyectoDAO.crearOActualizarTarea(t);
+				if(idTarea == 0){
+					Toast.makeText(this, R.string.exito_nueva_tarea, Toast.LENGTH_LONG).show();
+				}
+				else{
+					Toast.makeText(this, R.string.exito_modificar_tarea, Toast.LENGTH_LONG).show();
+				}
+				finish();
+			}
+			else{
+				Toast.makeText(this, errores, Toast.LENGTH_LONG).show();
+			}
+		}
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+	private String validar() {
+		String res = "";
+		if(editTextDescripcion.getText().toString().trim().equals("")){
+			res += getString(R.string.error_descripcion);
+		}
 
-        Intent intent;
+		try{
+			Integer.parseInt(editTextHorasEstimadas.getText().toString().trim());
+		}
+		catch (Exception e){
+			res += (res.isEmpty()? "" : "\n") + getString(R.string.error_horas_estimadas);
+		}
 
-        switch (id){
-            case R.id.action_alta_usuario:
-                intent = new Intent(this, AltaUsuarioActivity.class);
-                startActivity(intent);
-                break;
+		if(seekBarPrioridad.getProgress()<0 || seekBarPrioridad.getProgress()>3){
+			res += (res.isEmpty()? "" : "\n") + getString(R.string.error_prioridad);
+		}
 
-        }
+		//TODO validar spinner??
 
-        return super.onOptionsItemSelected(item);
-    }
+		return res;
+	}
 
-    public void buscarContactos(){
-        JSONArray arr = new JSONArray();
-        contactos = new ArrayList<>();
-        Uri uri =  ContactsContract.Contacts.CONTENT_URI;
-        String sortOrder =  ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
-        final String[] projection = new String[] {
-                ContactsContract.Contacts._ID,
-                ContactsContract.Contacts.DISPLAY_NAME,
-                ContactsContract.Contacts.HAS_PHONE_NUMBER, //Si se necesita numero de telefono
-        };
-        String selection = ContactsContract.Contacts.DISPLAY_NAME+" LIKE '%' AND " + ContactsContract.Contacts.HAS_PHONE_NUMBER + "='1'";
-        // consulta ejemplo buscando por nombre visualizado en los contactos agregados
-        Cursor c =this.getContentResolver().query(uri, projection, selection, null, sortOrder);
-        int count = c.getColumnCount();
-        int fila = 0;
-        String[] columnas= new String[count];
-        try {
-            while(c.moveToNext()) {
-                JSONObject unContacto = new JSONObject();
-                for(int i = 0; (i < count );  i++) {
-                    if(fila== 0)columnas[i]=c.getColumnName(i);
-                    unContacto.put(columnas[i],c.getString(i));
-                }
-                Log.d("TEST-ARR", unContacto.toString());
-                arr.put(fila,unContacto);
-                fila++;
-                Log.d("TEST-ARR","fila : "+fila);
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_alta_tarea, menu);
+		return true;
+	}
 
-                //Si se necesita mail
-                /*
-                String id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
-                Cursor emailCur = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,null,ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", new String[]{id},null);
-                while (emailCur.moveToNext()) {
-                    String email = emailCur.getString( emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-                    contactos.add(unContacto.getString(ContactsContract.Contacts.DISPLAY_NAME));
-                    Log.d("TEST-ARR", email);
-                    break;
-                }
-                */
-                contactos.add(unContacto.getString(ContactsContract.Contacts.DISPLAY_NAME));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+
+		Intent intent;
+
+		switch (id){
+			case R.id.action_alta_usuario:
+				intent = new Intent(this, AltaUsuarioActivity.class);
+				startActivity(intent);
+				break;
+
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+	public void askForContactPermission(){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (ContextCompat.checkSelfPermission(AltaTareaActivity.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+				if (ActivityCompat.shouldShowRequestPermissionRationale(AltaTareaActivity.this,
+						Manifest.permission.CALL_PHONE)) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(AltaTareaActivity.this);
+					builder.setTitle("Permisos Peligrosos!!!");
+					builder.setPositiveButton(android.R.string.ok, null);
+					builder.setMessage("Puedo acceder a un permiso peligroso???");
+					builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+						@TargetApi(Build.VERSION_CODES.M)
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							flagPermisoPedido=true;
+							requestPermissions(
+									new String[]
+											{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS,Manifest.permission.GET_ACCOUNTS}
+									, PERMISSION_REQUEST_CONTACT);
+						}
+					});
+					builder.show();
+				} else {
+					flagPermisoPedido=true;
+					ActivityCompat.requestPermissions(AltaTareaActivity.this,
+							new String[]
+									{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS,Manifest.permission.GET_ACCOUNTS}
+							, PERMISSION_REQUEST_CONTACT);
+				}
+
+			}
+		}
+		if(!flagPermisoPedido){
+			buscarContactos();
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+	                                       String permissions[], int[] grantResults) {
+		Log.d("ESCRIBIR_JSON","req code"+requestCode+ " "+ Arrays.toString(permissions)+" ** "+Arrays.toString(grantResults));
+		switch (requestCode) {
+			case AltaTareaActivity.PERMISSION_REQUEST_CONTACT: {
+				if (grantResults.length > 0
+						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					buscarContactos();
+				} else {
+					finish();
+					Toast.makeText(AltaTareaActivity.this, "No permission for contacts", Toast.LENGTH_SHORT).show();
+				}
+				return;
+			}
+		}
+
+	}
+
+	public void buscarContactos(){
+		contactos = new ArrayList<>();
+		Uri uri =  ContactsContract.Contacts.CONTENT_URI;
+		String sortOrder =  ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+		final String[] projection = new String[] {
+				ContactsContract.Contacts._ID,
+				ContactsContract.Contacts.DISPLAY_NAME,
+		};
+		String selection = ContactsContract.Contacts.DISPLAY_NAME+" LIKE '%' AND " + ContactsContract.Contacts.HAS_PHONE_NUMBER + "='1'";
+		// consulta ejemplo buscando por nombre visualizado en los contactos agregados
+		Cursor c =this.getContentResolver().query(uri, projection, selection, null, sortOrder);
+		while(c.moveToNext()) {
+			String nombre = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+			String id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
+			Cursor telefonoCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+					ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
+
+			String telefono = "";
+			while (telefonoCur.moveToNext()) {
+				telefono = telefonoCur.getString( telefonoCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+				Log.d("TEST-ARR", telefono);
+				telefonoCur.close();
+				break;
+			}
+
+			String email = "";
+			Cursor emailCur = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,null,ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", new String[]{id},null);
+			while (emailCur.moveToNext()) {
+				email = emailCur.getString( emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+				Log.d("TEST-ARR", email);
+				emailCur.close();
+				break;
+			}
+			contactos.add(new Usuario(null, nombre, email, telefono));
+		}
+		c.close();
+		ArrayAdapter<Usuario> adapter = new ArrayAdapter<>(this,
+				android.R.layout.simple_spinner_item, contactos);
+		spinnerResponsable.setAdapter(adapter);
+	}
 }

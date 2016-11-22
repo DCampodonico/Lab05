@@ -45,6 +45,7 @@ public class ProyectoDBMetadata {
         public static final String USUARIO ="NOMBRE";
         public static final String USUARIO_ALIAS ="NOMBRE_USUARIO";
         public static final String MAIL ="CORREO_ELECTRONICO";
+        public static final String TELEFONO ="TELEFONO";
     }
 
     public static class TablaTareasMetadata implements BaseColumns{

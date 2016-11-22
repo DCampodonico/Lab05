@@ -35,5 +35,7 @@
         app:showAsAction="ifRoom" />
     <item android:title="@string/action_buscar_tarea_desvio_title"
         android:id="@+id/action_buscar_tarea_desvio" />
+    <item android:title="@string/action_proyectos"
+        android:id="@+id/action_proyectos" />
 
 </menu>
