@@ -24,6 +24,9 @@
     <string name="error_horas_estimadas">Horas estimadas inválidas</string>
     <string name="error_prioridad">Prioridad inválida</string>
     <string name="error_descripcion">Descripción inválida</string>
+    <string name="error_nombre_usuario">Nombre de usuario inválido</string>
+    <string name="error_email_usuario">Dirección de email inválida</string>
+    <string name="error_telefono_usuario">Teléfono inválido</string>
     <string name="exito_nueva_tarea">Se ha creado una nueva tarea</string>
     <string name="exito_modificar_tarea">Se ha modificado la tarea</string>
     <string name="exito_nuevo_proyecto">Se ha creado un nuevo proyecto</string>
@@ -66,5 +69,5 @@
     <string name="proyecto_nombre">Nombre</string>
     <string name="error_nombre_proyecto">Nombre inválido</string>
     <string name="title_activity_editar_proyecto">Editar proyecto</string>
-    <string name="text_view_proyectos_buscando">Buscando proyectos en el servidor...</string>
+    <string name="text_view_proyectos_buscando">Buscando proyectos en el servidor…</string>
 </resources>

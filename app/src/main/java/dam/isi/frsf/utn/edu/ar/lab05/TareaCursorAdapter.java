@@ -26,7 +26,9 @@ import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,17 +45,13 @@ import java.util.HashMap;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 
-/**
- * Created by mdominguez on 06/10/16.
- */
-public class TareaCursorAdapter extends CursorAdapter {
-    private LayoutInflater inflador;
+class TareaCursorAdapter extends CursorAdapter {
     private ProyectoDAO myDao;
     private Context contexto;
 
-    private HashMap<Integer,Long> estados = new HashMap<>();
+    private SparseArrayCompat<Long> estados = new SparseArrayCompat<>();
 
-    public TareaCursorAdapter(Context contexto, Cursor c, ProyectoDAO dao) {
+    TareaCursorAdapter(Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
         myDao = dao;
         this.contexto = contexto;
@@ -61,17 +59,13 @@ public class TareaCursorAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-        inflador = (LayoutInflater) context
+        LayoutInflater inflador = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View vista = inflador.inflate(R.layout.fila_tarea, viewGroup, false);
-        return vista;
+        return inflador.inflate(R.layout.fila_tarea, viewGroup, false);
     }
 
     @Override
     public void bindView(View view, final Context context, final Cursor cursor) {
-        //obtener la posicion de la fila actual y asignarla a los botones y checkboxes
-        int pos = cursor.getPosition();
-
         // Referencias UI.
         TextView nombre = (TextView) view.findViewById(R.id.tareaTitulo);
         TextView tiempoAsignado = (TextView) view.findViewById(R.id.tareaMinutosAsignados);
@@ -86,10 +80,12 @@ public class TareaCursorAdapter extends CursorAdapter {
 
         nombre.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.TAREA)));
         Integer horasAsigandas = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS));
-        tiempoAsignado.setText(horasAsigandas * 60 + "");
+        String texto = horasAsigandas * 60 + "";
+        tiempoAsignado.setText(texto);
 
         Integer minutosAsigandos = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS));
-        tiempoTrabajado.setText(minutosAsigandos + "");
+        texto = minutosAsigandos + "";
+        tiempoTrabajado.setText(texto);
         String p = cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD_ALIAS));
         prioridad.setText(p);
         responsable.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO_ALIAS)));
@@ -141,7 +137,7 @@ public class TareaCursorAdapter extends CursorAdapter {
                     estados.put(idTarea,System.currentTimeMillis());
                     Log.d("LAB05-MAIN", "comenzar a trabajar : --- " + idTarea);
                 } else {
-                    final Integer minutosTranscurridos = (int) (long) ((System.currentTimeMillis() - (Long) estados.get(idTarea)) / 1000 * 12 / 60);
+                    final Integer minutosTranscurridos = (int) (long) ((System.currentTimeMillis() - estados.get(idTarea)) / 1000 * 12 / 60);
                     estados.put(idTarea,null);
                     Thread backGroundUpdate = new Thread(new Runnable() {
                         @Override
@@ -161,14 +157,14 @@ public class TareaCursorAdapter extends CursorAdapter {
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View v) {
-// Crear un builder y vincularlo a la actividad que lo mostrará
+                // Crear un builder y vincularlo a la actividad que lo mostrará
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-//Configurar las características
+                //Configurar las características
                 String s = v.getResources().getString(R.string.dialog_message);
                 s = String.format(s, v.getTag(R.id.TAG_ONLINE_DESCRIPCION).toString());
                 builder.setMessage(s)
                         .setTitle(R.string.dialog_title)
-//Obtener una instancia de cuadro de dialogo
+                        //Obtener una instancia de cuadro de dialogo
                         .setPositiveButton(R.string.dialog_aceptar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -184,14 +180,14 @@ public class TareaCursorAdapter extends CursorAdapter {
                             }
                         });
                 AlertDialog dialog = builder.create();
-//Mostrarlo
+                //Mostrarlo
                 dialog.show();
                 return false;
             }
         });
     }
 
-    Handler handlerRefresh = new Handler(Looper.getMainLooper()) {
+    private Handler handlerRefresh = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message inputMessage) {
             TareaCursorAdapter.this.changeCursor(myDao.listaTareas(1));

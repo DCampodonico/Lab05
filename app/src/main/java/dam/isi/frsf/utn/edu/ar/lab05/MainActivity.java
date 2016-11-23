@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView lvTareas;
     private ProyectoDAO proyectoDAO;
     private Cursor cursor;
-    private TareaCursorAdapter tca;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         cursor = proyectoDAO.listaTareas(1);
         Log.d("LAB05-MAIN","mediol "+cursor.getCount());
 
-        tca = new TareaCursorAdapter(MainActivity.this,cursor,proyectoDAO);
+        TareaCursorAdapter tca = new TareaCursorAdapter(MainActivity.this,cursor,proyectoDAO);
         lvTareas.setAdapter(tca);
         Log.d("LAB05-MAIN","fin resume");
     }

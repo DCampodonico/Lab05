@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -51,9 +52,9 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
 	private EditText mEmailAddress;
 	private EditText mPhoneNumber;
 	private Button buttonAltaUsuarioGuardar, buttonAltaUsuarioCancelar;
-	private ProyectoDAO proyectoDAO = new ProyectoDAO(this);
 	private ProyectoApiRest proyectoApiRest = new ProyectoApiRest();
 	private Usuario usuario;
+    private Toolbar toolbar;
 
 	private boolean flagPermisoPedido;
 	private static final int PERMISSION_REQUEST_CONTACT =999;
@@ -62,22 +63,28 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta_usuario);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setParametros();
+
         setSupportActionBar(toolbar);
+        if(getSupportActionBar()!=null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mName = (EditText) findViewById(R.id.editName);
-        mEmailAddress = (EditText) findViewById(R.id.editEmail);
-        mPhoneNumber = (EditText) findViewById(R.id.editPhone);
-	    buttonAltaUsuarioGuardar = (Button) findViewById(R.id.buttonAltaUsuarioGuardar);
-	    buttonAltaUsuarioCancelar = (Button) findViewById(R.id.buttonAltaUsuarioCancelar);
 	    buttonAltaUsuarioGuardar.setOnClickListener(this);
 	    buttonAltaUsuarioCancelar.setOnClickListener(this);
     }
 
+    private void setParametros(){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mName = (EditText) findViewById(R.id.editName);
+        mEmailAddress = (EditText) findViewById(R.id.editEmail);
+        mPhoneNumber = (EditText) findViewById(R.id.editPhone);
+        buttonAltaUsuarioGuardar = (Button) findViewById(R.id.buttonAltaUsuarioGuardar);
+        buttonAltaUsuarioCancelar = (Button) findViewById(R.id.buttonAltaUsuarioCancelar);
+    }
+
     private void agregarUsuarioADBLocal(Usuario usuario) {
-	    proyectoDAO = new ProyectoDAO(this);
+		ProyectoDAO proyectoDAO = new ProyectoDAO(this);
 	    usuario.setId(proyectoDAO.nuevoUsuario(usuario));
     }
 
@@ -117,29 +124,28 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
 
 			}
 		}
-		if(!flagPermisoPedido) agregarUsuarioAContactos(usuario);
+		if(!flagPermisoPedido) guardarContacto(usuario);
 	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
-	                                       String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
 		Log.d("ESCRIBIR_JSON","req code"+requestCode+ " "+ Arrays.toString(permissions)+" ** "+Arrays.toString(grantResults));
 		switch (requestCode) {
 			case AltaUsuarioActivity.PERMISSION_REQUEST_CONTACT: {
 				if (grantResults.length > 0
 						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					agregarUsuarioAContactos(usuario);
+                    guardarContacto(usuario);
 				} else {
 					finish();
 					Toast.makeText(AltaUsuarioActivity.this, "No permission for contacts", Toast.LENGTH_SHORT).show();
 				}
-				return;
 			}
 		}
-		usuario = null;
 	}
 
-	private void agregarUsuarioAContactos(Usuario usuario){
+	@SuppressWarnings("ConstantConditions")
+    private void agregarUsuarioAContactos(Usuario usuario){
         String accountType =null;
         String accountName =null;
         ContentValues values = new ContentValues();
@@ -169,31 +175,47 @@ public class AltaUsuarioActivity extends AppCompatActivity implements View.OnCli
         Log.d("INFO", "Se creo un nuevo contacto");
     }
 
+    private void guardarContacto(Usuario usuario){
+        this.agregarUsuarioAContactos(usuario);
+        this.agregarUsuarioADBLocal(usuario);
+        this.pushUsuario(usuario);
+        Toast.makeText(this, R.string.Alta_usuario_exito, Toast.LENGTH_LONG).show();
+        finish();
+    }
+
 	@Override
 	public void onClick(View v) {
-		int id = v.getId();
-		if(id == buttonAltaUsuarioCancelar.getId()){
-			finish();
-		}
-		else if(id == buttonAltaUsuarioGuardar.getId()){
-			String errores = validar();
-			if(errores.equals("")){
-				Usuario usuario = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim(), mPhoneNumber.getText().toString().trim());
-				askForContactPermission(usuario);
-				this.agregarUsuarioADBLocal(usuario);
-				this.pushUsuario(usuario);
-				Toast.makeText(this, R.string.Alta_usuario_exito, Toast.LENGTH_LONG).show();
-				finish();
-			}
-			else{
-				Toast.makeText(this, errores, Toast.LENGTH_LONG).show();
-			}
-		}
-		}
+        switch(v.getId()){
+            case R.id.buttonAltaUsuarioCancelar:
+            finish();
+            break;
+
+            case R.id.buttonAltaUsuarioGuardar:
+            String errores = validar();
+            if(errores.equals("")){
+                Usuario usuario = new Usuario(null, mName.getText().toString().trim(), mEmailAddress.getText().toString().trim(), mPhoneNumber.getText().toString().trim());
+                askForContactPermission(usuario);
+            }
+            else{
+                Toast.makeText(this, errores, Toast.LENGTH_LONG).show();
+            }
+            break;
+        }
+   }
 
 	private String validar() {
-		//TODO validar alta usuario
-		return "";
+        String res = "";
+        if(mName.getText().toString().trim().equals("")){
+            res += getString(R.string.error_nombre_usuario);
+        }
+        if(mEmailAddress.getText().toString().trim().equals("")){
+            res += getString(R.string.error_email_usuario);
+        }
+        if(mPhoneNumber.getText().toString().trim().equals("")){
+            res += getString(R.string.error_telefono_usuario);
+        }
+
+        return res;
 	}
 }
 
